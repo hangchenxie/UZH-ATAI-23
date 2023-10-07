@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: speakeasypy
+Version: 1.0.0
+Summary: demo for speakeasypy
+Home-page: https://gitlab.ifi.uzh.ch/ddis/Lectures/atai/speakeasy-python-client-library
+Author: Hangchen Xie
+Author-email: Hangchen Xie@uzh.ch
+Requires-Python: >=3.6
