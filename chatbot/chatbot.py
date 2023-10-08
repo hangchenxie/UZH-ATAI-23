@@ -35,8 +35,11 @@ class Agent:
 
                     # Implement your agent here #
                     if message.message.startswith("PREFIX"):
-                        answer = [str(s) for s, in graph.query(message.message)]
-                        room.post_messages(f"{answer}")
+                        try:
+                            answer = [str(s) for s, in graph.query(message.message)]
+                            room.post_messages(f"{answer}")
+                        except:
+                            room.post_messages(f"Sorry, I don't know the answer. Your format is wrong.")
 
                     # Send a message to the corresponding chat room using the post_messages method of the room object.
                     else:

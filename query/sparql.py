@@ -13,6 +13,8 @@ class Query:
         pass
 
     def get_result(self):
+        pass
 
 
     def get_result_as_df(self):
+        pass
