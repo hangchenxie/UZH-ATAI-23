@@ -34,9 +34,24 @@ class Agent:
                         f"- {self.get_time()}")
 
                     # Implement your agent here #
+                    
+                    # TODO: move implementation to a separate class
                     if message.message.startswith("PREFIX"):
+                        
+                        def convert_type(term):
+                            d = term.datatype
+                            if not d:
+                                new_term = str(term).replace('–', '-')
+                            elif 'integer' in d:
+                                new_term = int(term)
+                            else:
+                                new_term = str(term)
+                            return new_term
+                        
                         try:
-                            answer = [str(s) for s, in graph.query(message.message)]
+                            answer = [
+                                [convert_type(t) for t in s] for s in graph.query(message.message)
+                            ]
                             room.post_messages(f"{answer}")
                         except:
                             room.post_messages(f"Sorry, I don't know the answer. Your format is wrong.")

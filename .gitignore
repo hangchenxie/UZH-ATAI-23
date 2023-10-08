@@ -1,4 +1,6 @@
-
+speakeasy*
+__pycache__/
+.ipynb_checkpoints
 .DS_Store
 .ipynb_checkpoints/demo-checkpoint.ipynb
 data/14_graph.nt
@@ -6,3 +8,4 @@ data/imdb-top-250.t
 data/plots.csv
 demo.ipynb
 demo.ipynb
+chatbot/knowledge_graph/__pycache__/knowledge_graph.cpython-39.pyc
