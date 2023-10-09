@@ -41,7 +41,7 @@ class Agent:
                         def convert_type(term):
                             d = term.datatype
                             if not d:
-                                new_term = str(term).replace('–', '-')
+                                new_term = str(term)#.replace('–', '-')
                             elif 'integer' in d:
                                 new_term = int(term)
                             else:
