@@ -1,3 +1,4 @@
+import pickle
 from rdflib.namespace import Namespace, RDF, RDFS, XSD
 import os
 from rdflib.term import URIRef, Literal
@@ -7,7 +8,6 @@ import networkx as nx
 import pandas as pd
 import rdflib
 from collections import defaultdict, Counter
-from pathlib import Path
 
 
 prefixes = dict(
@@ -17,16 +17,30 @@ prefixes = dict(
         DDIS = Namespace('http://ddis.ch/atai/'),
     )
 
-data_path = Path(__file__).parents[2].joinpath("data", "14_graph.nt")
 
 class KnowledgeGraph:
-    def __init__(self, graph=None, path=data_path):
-        if graph is None:
-            self.graph = rdflib.Graph()
-            self.graph.parse(path, format='turtle')
-        else:
-            self.graph = graph
+    def __init__(
+            self, 
+            graph_path, 
+            cache_path, 
+            prefixes=prefixes
+        ):
         self.prefixes = prefixes
+        self.graph = self.load_or_parse_graph(graph_path, cache_path)
+
+
+    def load_or_parse_graph(self, graph_path, cache_path):
+        try:
+            with open(cache_path, 'rb') as f:
+                graph = pickle.load(f)
+        except (FileNotFoundError, pickle.UnpicklingError):
+            graph = rdflib.Graph()
+            graph.parse(graph_path, format='turtle')
+            with open(cache_path, 'wb') as f:
+                pickle.dump(graph, f)
+
+        return graph    
+
 
     def query(self, q):
         return self.graph.query(q)

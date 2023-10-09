@@ -1,10 +1,8 @@
-*__pycache__/knowledge_graph.cpython-39.pyc
+.env
 .ipynb_checkpoints
 .DS_Store
-data/14_graph.nt
-data/imdb-top-250.t
-data/plots.csv
+data/
 demo.ipynb
-demo.ipynb
-
-chatbot/knowledge_graph/__pycache__/knowledge_graph.cpython-39.pyc
+*.ipynb
+**/__pycache__/
+**/cache-directory/

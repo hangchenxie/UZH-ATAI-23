@@ -1,88 +1,30 @@
-from speakeasypy import Speakeasy, Chatroom
+from flask import Flask, request, jsonify
+from flask_caching import Cache
+from pathlib import Path
+from agent.agent import Agent
 from knowledge_graph.knowledge_graph import KnowledgeGraph
 
-from typing import List
-import time
+app = Flask("chatbot")
+cache = Cache(app, config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': 'cache-directory',
+    "CACHE_DEFAULT_TIMEOUT": 0,
+})
 
-DEFAULT_HOST_URL = 'https://speakeasy.ifi.uzh.ch'
-listen_freq = 2
-graph = KnowledgeGraph()
+graph_path = Path(__file__).parents[0].joinpath("data", "14_graph.nt")
+cache_path = Path(__file__).parents[0].joinpath("data", "cache", 'cached_graph.pkl')
 
-class Agent:
-    def __init__(self, username, password):
-        self.username = username
-        # Initialize the Speakeasy Python framework and login.
-        self.speakeasy = Speakeasy(host=DEFAULT_HOST_URL, username=username, password=password)
-        self.speakeasy.login()  # This framework will help you log out automatically when the program terminates.
+@cache.memoize(timeout=0)  
+def get_graph():
+    return KnowledgeGraph(graph_path=graph_path, cache_path=cache_path)
 
-    def listen(self):
-        while True:
-            # only check active chatrooms (i.e., remaining_time > 0) if active=True.
-            rooms: List[Chatroom] = self.speakeasy.get_rooms(active=True)
-            for room in rooms:
-                if not room.initiated:
-                    # send a welcome message if room is not initiated
-                    room.post_messages(f'Hello! This is a welcome message from {room.my_alias}.')
-                    room.initiated = True
-                # Retrieve messages from this chat room.
-                # If only_partner=True, it filters out messages sent by the current bot.
-                # If only_new=True, it filters out messages that have already been marked as processed.
-                for message in room.get_messages(only_partner=True, only_new=True):
-                    print(
-                        f"\t- Chatroom {room.room_id} "
-                        f"- new message #{message.ordinal}: '{message.message}' "
-                        f"- {self.get_time()}")
+# To delete cache:
+# cache.delete_memoized(get_graph)
 
-                    # Implement your agent here #
-                    
-                    # TODO: move implementation to a separate class
-                    if message.message.startswith("PREFIX"):
-                        
-                        def convert_type(term):
-                            d = term.datatype
-                            if not d:
-                                new_term = str(term)#.replace('–', '-')
-                            elif 'integer' in d:
-                                new_term = int(term)
-                            else:
-                                new_term = str(term)
-                            return new_term
-                        
-                        try:
-                            answer = [
-                                [convert_type(t) for t in s] for s in graph.query(message.message)
-                            ]
-                            room.post_messages(f"{answer}")
-                        except:
-                            room.post_messages(f"Sorry, I don't know the answer. Your format is wrong.")
-
-                    # Send a message to the corresponding chat room using the post_messages method of the room object.
-                    else:
-                        room.post_messages(f"Received your message: '{message.message}' ")
-                    
-                    # Mark the message as processed, so it will be filtered out when retrieving new messages.
-                    room.mark_as_processed(message)
-
-                # Retrieve reactions from this chat room.
-                # If only_new=True, it filters out reactions that have already been marked as processed.
-                for reaction in room.get_reactions(only_new=True):
-                    print(
-                        f"\t- Chatroom {room.room_id} "
-                        f"- new reaction #{reaction.message_ordinal}: '{reaction.type}' "
-                        f"- {self.get_time()}")
-
-                    # Implement your agent here #
-
-                    room.post_messages(f"Received your reaction: '{reaction.type}' ")
-                    room.mark_as_processed(reaction)
-
-            time.sleep(listen_freq)
-
-    @staticmethod
-    def get_time():
-        return time.strftime("%H:%M:%S, %d-%m-%Y", time.localtime())
+demo_bot = Agent("torch-staccato-mushroom_bot", "ofmkiY2qPQeiRg", get_graph())
+demo_bot.listen()
 
 
 if __name__ == '__main__':
-    demo_bot = Agent("torch-staccato-mushroom_bot", "ofmkiY2qPQeiRg")
-    demo_bot.listen()
+    app.run(debug=True, host='0.0.0.0', port=5000)
+    
