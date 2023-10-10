@@ -22,22 +22,16 @@ class KnowledgeGraph:
     def __init__(
             self, 
             graph_path, 
-            cache_path, 
+            # cache_path, 
             prefixes=prefixes
         ):
         self.prefixes = prefixes
-        self.graph = self.load_or_parse_graph(graph_path, cache_path)
+        self.graph = self.load_or_parse_graph(graph_path)
 
 
-    def load_or_parse_graph(self, graph_path, cache_path):
-        try:
-            with open(cache_path, 'rb') as f:
-                graph = pickle.load(f)
-        except (FileNotFoundError, pickle.UnpicklingError):
-            graph = rdflib.Graph()
-            graph.parse(graph_path, format='turtle')
-            with open(cache_path, 'wb') as f:
-                pickle.dump(graph, f)
+    def load_or_parse_graph(self, graph_path):
+        graph = rdflib.Graph()
+        graph.parse(graph_path, format='turtle')
 
         return graph    
 

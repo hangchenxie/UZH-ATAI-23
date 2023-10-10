@@ -12,11 +12,10 @@ cache = Cache(app, config={
 })
 
 graph_path = Path(__file__).parents[0].joinpath("data", "14_graph.nt")
-cache_path = Path(__file__).parents[0].joinpath("data", "cache", 'cached_graph.pkl')
 
 @cache.memoize(timeout=0)  
-def get_graph():
-    return KnowledgeGraph(graph_path=graph_path, cache_path=cache_path)
+def get_graph(graph_path=graph_path):
+    return KnowledgeGraph(graph_path=graph_path)
 
 # To delete cache:
 # cache.delete_memoized(get_graph)
