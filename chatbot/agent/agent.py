@@ -61,8 +61,10 @@ class Agent:
                                 [convert_type(t) for t in s] for s in self.graph.query(converted_message)
                             ]
                             room.post_messages(f"{answer}")
-                        except:
-                            room.post_messages(f"Sorry, I cannot parse your input. Please input a string.")
+                            print(f'Response: {answer}')
+                        except Exception as exception:
+                            room.post_messages(f"Error: {type(exception).__name__}")
+                            print(f'Error: {type(exception).__name__}')
 
                     # Send a message to the corresponding chat room using the post_messages method of the room object.
                     else:
