@@ -45,14 +45,14 @@ class Embedding:
             relation_id = self.rel2id[relation]
             movie_emb = self.entity_emb[self.movie_id]
             genre = self.relation_emb[relation_id]
-            lhs = np.sum(movie_emb, genre)
+            lhs = movie_emb + genre
             distances = pairwise_distances(lhs.reshape(1, -1), self.entity_emb).reshape(-1)
             most_likely = np.argsort(distances)
         return most_likely, distances
 
 
     def get_likely_entities(self, most_likely, distances):
-        for rank, idx in enumerate(most_likely[:20]):
+        for rank, idx in enumerate(most_likely[:3]):
             rank += 1
             ent = self.id2ent[idx]
             q_id = ent.split('/')[-1]
