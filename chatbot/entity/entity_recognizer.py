@@ -103,6 +103,18 @@ if __name__ == "__main__":
         "Who is the director of Star Wars: Episode VI - Return of the Jedi? ",
         "Who is the screenwriter of The Masked Gang: Cyprus? ",
         "When was 'The Godfather' released? ",
+        "What is the box office of The Princess and the Frog? ",
+        'Can you tell me the publication date of Tom Meets Zizou? ',
+        'Who is the executive producer of X-Men: First Class? '
+        "Who is the director of Good Will Hunting? ",
+        'Who directed The Bridge on the River Kwai?',
+        "Who is the director of Star Wars: Episode VI - Return of the Jedi?",
+        "Who is the screenwriter of The Masked Gang: Cyprus?",
+        "What is the MPAA film rating of Weathering with You?",
+        "What is the genre of Good Neighbors?",
+        "What is the box office of The Princess and the Frog? ",
+        'Can you tell me the publication date of Tom Meets Zizou? ',
+        'Who is the executive producer of X-Men: First Class? '
     ]
     entities_in_text = entity_recognizer.get_entities(text_list)
     print(entities_in_text)

@@ -17,10 +17,10 @@ class Embedding:
         self.DDIS = Namespace('http://ddis.ch/atai/')
         self.RDFS = Namespace.RDFS
         self.graph = graph
-        self.entity_emb = np.load(os.path.join('data', 'entity_embeds.npy'))
-        self.relation_emb = np.load(os.path.join('data', 'relation_embeds.npy'))
-        self.entity_file = os.path.join('data', 'entity_ids.del')
-        self.relation_file = os.path.join('data', 'relation_ids.del')
+        self.entity_emb = np.load(os.path.join(Path(__file__).parents[2],'data', 'entity_embeds.npy'))
+        self.relation_emb = np.load(os.path.join(Path(__file__).parents[2],'data', 'relation_embeds.npy'))
+        self.entity_file = os.path.join(Path(__file__).parents[2],'data', 'entity_ids.del')
+        self.relation_file = os.path.join(Path(__file__).parents[2],'data', 'relation_ids.del')
 
         with open(self.entity_file, 'r') as ifile:
             self.ent2id = {rdflib.term.URIRef(ent): int(idx) for idx, ent in csv.reader(ifile, delimiter='\t')}
