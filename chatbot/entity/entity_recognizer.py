@@ -15,7 +15,7 @@ from flask_caching import Cache
 from pathlib import Path
 
 
-ent_lbl_path = Path(__file__).parents[0].joinpath("data", "ent_lbl.pickle")
+ent_lbl_path = Path(__file__).parents[1].joinpath("data", "ent_lbl.pickle")
 
 with open(ent_lbl_path, 'rb') as file:
     ent_lbl = pickle.load(file)

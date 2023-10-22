@@ -1,7 +1,7 @@
 .env
 .ipynb_checkpoints
 .DS_Store
-data/
+
 demo.ipynb
 *.ipynb
 **/__pycache__/
