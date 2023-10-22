@@ -3,6 +3,7 @@ import json
 from difflib import get_close_matches
 import os
 from pathlib import Path
+from chatbot.entity.entity_recognizer import EntityRecognizer
 
 class Relation:
 
@@ -12,12 +13,14 @@ class Relation:
             "(Who|What|who|what) (is|are|was|were) the( .*?) of ([A-Z].*)",
             "(who|what)(.)the ([a-z].*[a-z]) of ([A-Z].*) (is|are)",
             "(who|Who)(.)([a-z]*) ([A-Z].*)",
-            "(me) (the) ([a-z].*[a-z]) of ([A-Z].*)"
+            "(?:.*)(?:Tell|tell)(?: me)?(?: about)?(.*)(?:of|in|from|for)(.*)"
         ]
         self.property_file = os.path.join(Path(__file__).parents[2],'data', 'property.json')
         with open(self.property_file, 'r', encoding="utf-8") as f:
             self.property = json.load(f)
         self.lbl2relation = {lbl: prop for prop, lbl in self.property.items()}
+        ER = EntityRecognizer(entities_in_graph=[])
+        self.entity = ER.get_entities(self.question)[0][0][0]
 
     def get_relation(self):
         for pattern in self.patterns:
@@ -25,10 +28,15 @@ class Relation:
             if match is None:
                 continue
             else:
-                relation = match.group(3).strip()
-                print("relation:", relation)
+                for group in match.groups():
+                    if group is None or group == self.entity:
+                        continue
+                    else:
+                        relation = group.strip()
+                        break
+                print("original relation:", relation)
                 self.relation = get_close_matches(relation, self.lbl2relation.keys())[0]
-                # print("relation:", self.relation)
+                # print("matched relation:", self.relation)
                 return self.relation
         return None
 
