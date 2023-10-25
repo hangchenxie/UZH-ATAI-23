@@ -44,15 +44,18 @@ class Relation:
 
 
 if __name__ == "__main__":
-    questions = ["Who is the director of Good Will Hunting? ",
-                 'Who directed The Bridge on the River Kwai?',
-                 "Who is the director of Star Wars: Episode VI - Return of the Jedi?",
-                 "Who is the screenwriter of The Masked Gang: Cyprus?",
-                 "What is the MPAA film rating of Weathering with You?",
-                 "What is the genre of Good Neighbors?",
-                 "What is the box office of The Princess and the Frog? ",
-                 'Can you tell me the publication date of Tom Meets Zizou? ',
-                 'Who is the executive producer of X-Men: First Class? ']
+    questions = [
+        "Who is the director of Star Wars: Episode VI - Return of the Jedi?",
+        "Who is the director of Star Wars: Episode VI – Return of the Jedi?",
+        "Who is the director of Good Will Hunting? ",
+        'Who directed The Bridge on the River Kwai?',
+        "Who is the screenwriter of The Masked Gang: Cyprus?",
+        "What is the MPAA film rating of Weathering with You?",
+        "What is the genre of Good Neighbors?",
+        "What is the box office of The Princess and the Frog? ",
+        'Can you tell me the publication date of Tom Meets Zizou? ',
+        'Who is the executive producer of X-Men: First Class? '
+    ]
     for question in questions:
         answer = Relation(question)
         print(question)

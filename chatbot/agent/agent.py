@@ -1,6 +1,7 @@
 from speakeasypy import Speakeasy, Chatroom
 from typing import List
 import time
+from .responsor import Responsor
 
 
 DEFAULT_HOST_URL = 'https://speakeasy.ifi.uzh.ch'
@@ -8,13 +9,11 @@ listen_freq = 2
 
 
 class Agent:
-    def __init__(self, username, password, graph):
-        self.username = username
-        self.graph = graph
+    def __init__(self, username, password):
         # Initialize the Speakeasy Python framework and login.
         self.speakeasy = Speakeasy(host=DEFAULT_HOST_URL, username=username, password=password)
         self.speakeasy.login()  # This framework will help you log out automatically when the program terminates.
-
+        self.responsor = Responsor()
 
     def listen(self):
         while True:
@@ -35,41 +34,47 @@ class Agent:
                         f"- {self.get_time()}")
 
                     # Implement your agent here #
-                    # TODO: move implementation to a separate class
-                    def convert_html_to_string(message):
-                        if not isinstance(message, str):
-                            return message.to_string()
-                        else:
-                            return message
                     
-                    converted_message = convert_html_to_string(message.message)
+        
+                    # def convert_html_to_string(message):
+                    #     if not isinstance(message, str):
+                    #         return message.to_string()
+                    #     else:
+                    #         return message
+                    
+                    # converted_message = convert_html_to_string(message.message)
 
-                    if converted_message.startswith("PREFIX"):
-                        
-                        def convert_type(term):
-                            d = term.datatype
-                            if not d:
-                                new_term = str(term)
-                            elif 'integer' in d:
-                                new_term = int(term)
-                            else:
-                                new_term = str(term)
-                            return new_term
-                        
-                        try:
-                            answer = [
-                                [convert_type(t) for t in s] for s in self.graph.query(converted_message)
-                            ]
-                            room.post_messages(f"{answer}")
-                            print(f'Response: {answer}')
-                        except Exception as exception:
-                            room.post_messages(f"Error: {type(exception).__name__}")
-                            print(f'Error: {type(exception).__name__}')
+                    message_text = message.message if isinstance(message.message, str) else message.message.to_string()
 
+                    
+                    # # TODO: move to responsor.py
+                    # if message_text.startswith("PREFIX"):
+                        
+                    #     def convert_type(term):
+                    #         d = term.datatype
+                    #         if not d:
+                    #             new_term = str(term)
+                    #         elif 'integer' in d:
+                    #             new_term = int(term)
+                    #         else:
+                    #             new_term = str(term)
+                    #         return new_term
+                        
+                    #     try:
+                    #         answer = [
+                    #             [convert_type(t) for t in s] for s in self.graph.query(message_text)
+                    #         ]
+                    #         room.post_messages(f"{answer}")
+                    #         print(f'Response: {answer}')
+                    #     except Exception as exception:
+                    #         room.post_messages(f"Error: {type(exception).__name__}")
+                    #         print(f'Error: {type(exception).__name__}')
+
+                    
                     # Send a message to the corresponding chat room using the post_messages method of the room object.
-                    else:
-                        room.post_messages(f"Received your message: '{converted_message}' ")
-                    
+                    answer = self.responsor.response(message_text)
+                    room.post_messages(f"Answer: {answer}")
+                                        
                     # Mark the message as processed, so it will be filtered out when retrieving new messages.
                     room.mark_as_processed(message)
 

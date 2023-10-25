@@ -8,7 +8,13 @@ import networkx as nx
 import pandas as pd
 import rdflib
 from collections import defaultdict, Counter
+from pathlib import Path
+from .. import cache
 
+
+graph_path = Path(__file__).parents[1].joinpath("data", "14_graph.nt")
+graph = rdflib.Graph()
+graph.parse(graph_path, format='turtle', encoding='utf-8')
 
 prefixes = dict(
         WD = Namespace('http://www.wikidata.org/entity/'),
@@ -19,22 +25,9 @@ prefixes = dict(
 
 
 class KnowledgeGraph:
-    def __init__(
-            self, 
-            graph_path, 
-            # cache_path, 
-            prefixes=prefixes
-        ):
+    def __init__(self):
         self.prefixes = prefixes
-        self.graph = self.load_or_parse_graph(graph_path)
-
-
-    def load_or_parse_graph(self, graph_path):
-        graph = rdflib.Graph()
-        graph.parse(graph_path, format='turtle', encoding='utf-8')
-
-        return graph    
-
+        self.graph = graph
 
     def query(self, q):
         return self.graph.query(q)
