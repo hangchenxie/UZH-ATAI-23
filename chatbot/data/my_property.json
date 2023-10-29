@@ -1,0 +1,10 @@
+{
+    "P57": [ "director"],
+    "P58": [ "screenwriter"],
+    "P577": [ "publication date", "release date"],
+    "P136": [ "genre", "type", "kind"],
+    "P1657": [ "MPAA film rating", "score", "stars", "rate"],
+    "P161": [ "cast member", "actor", "actress", "played"],
+    "P1431": [ "executive producer"],
+    "P2142": [ "box office"]
+}
