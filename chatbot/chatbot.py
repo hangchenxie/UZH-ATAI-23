@@ -1,5 +1,5 @@
-from .agent.agent import Agent
-from .agent.responsor import Responsor
+from chatbot.agent.agent import Agent
+from chatbot.agent.responsor import Responsor
 
 
 def DemoBot():

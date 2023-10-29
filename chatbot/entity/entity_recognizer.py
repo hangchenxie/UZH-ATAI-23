@@ -8,7 +8,7 @@ from sparknlp.annotator import *
 from sparknlp.base import *
 from sparknlp.pretrained import PretrainedPipeline
 from pyspark.sql.types import StringType, IntegerType
-from .. import cache
+from chatbot import cache
 from pathlib import Path
 import re
 from rapidfuzz import fuzz
@@ -62,13 +62,23 @@ class EntityRecognizer:
 
 
     def match_entity_label(self, entity, ent_lbl):
-        if entity in ent_lbl: return entity, 1.
+        if entity in ent_lbl: return entity, 100.
         else:
             matched_ent_lbl, r = None, 0
             for e in ent_lbl:
                 ratio = fuzz.ratio(e.lower(), entity.lower())
                 if ratio > r: matched_ent_lbl, r = e, ratio
             return matched_ent_lbl, r
+        # ratio_list = {}
+        # for e in ent_lbl:
+        #     ratio = fuzz.ratio(e.lower, entity.lower())
+        #     if ratio > r:
+        #         ratio_list[e] = float(ratio)
+        # desired_ratio = max(ratio_list.values())
+        # # Get the key (keyword) corresponding to the maximum ratio
+        # desired_key = [key for key, value in ratio_list.items() if value == desired_ratio][0]
+        # matched_rel_lbl, r = desired_key, desired_ratio
+        # return matched_rel_lbl, r
 
 
     def get_entities(self, text):
@@ -80,5 +90,16 @@ class EntityRecognizer:
             ent_dict[ent]["matched_lbl"] = self.match_entity_label(ent, ent_lbl)[0]
             ent_dict[ent]["score"] = self.match_entity_label(ent, ent_lbl)[1]
         return ent_dict
+
+
+if __name__ == "__main__":
+    entity_recognizer = EntityRecognizer()
+    text_list = 'Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? '
+
+    entities_in_text = entity_recognizer.get_entities(text_list)
+    print(entities_in_text)
+
+    # matched_entity = entity_recognizer.match_entity_to_label('harry potter', ent_lbl)
+
 
 

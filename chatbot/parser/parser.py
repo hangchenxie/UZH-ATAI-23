@@ -1,6 +1,7 @@
 import re
-from ..entity.entity_recognizer import EntityRecognizer
-from ..relation.relation_recognizer import RelationRecognizer
+from chatbot.entity.entity_recognizer import EntityRecognizer
+from chatbot.relation.relation_recognizer import RelationRecognizer
+from chatbot import cache
 
 class MessageParser:
     def __init__(self):
@@ -15,6 +16,28 @@ class MessageParser:
         # TODO: use a relation extractor class
         for old, new in [(r"Who|What|When|How many|Tell me|is|are|\bthe\b|\bof\b|\?","")]:
             t_rem = re.sub(old, new, t_rem, flags=re.IGNORECASE)
-            t_rem = t_rem.strip()
+            t_rem = t_rem.strip().replace('"', '')
+            print("parsed_question:", t_rem)
         rel_dict = {t_rem: self.relation_recognizer.get_relation(t_rem)}
         return ent_dict, rel_dict
+
+if __name__ == "__main__":
+    ms = MessageParser()
+    questions = [
+        'When was "The Gofather" released?',
+        "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
+        "Who is the director of Good Will Huntin? ",
+        'Who directed The Bridge on the River Kwai?',
+        "Who is the screenwriter of The Masked Gang: Cyprus?",
+        "What is the MPAA film rating of Weathering with You?",
+        "What is the genre of Good Neighbors?",
+        "What is the box office of The Princess and the Frog? ",
+        'Can you tell me the publication date of Tom Meets Zizou? ',
+        'Who is the executive producer of X-Men: First Class? '
+    ]
+    for question in questions:
+        answer = ms.parse_entity_relation(question)
+        print(question)
+        ent_dict, rel_dict = answer
+        print(f'ent_dict:{ent_dict}')
+        print(f'rel_dict:{rel_dict}')

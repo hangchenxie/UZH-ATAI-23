@@ -6,7 +6,7 @@ import json
 import pandas as pd
 from sklearn.metrics import pairwise_distances
 from rdflib import Namespace
-from ..knowledge_graph.knowledge_graph import graph
+from chatbot.knowledge_graph.knowledge_graph import KnowledgeGraph
 
 embeds_path = Path(__file__).parents[1].joinpath("data", "embeds")
 entity_emb = np.load(embeds_path.joinpath('entity_embeds.npy'))
@@ -25,7 +25,7 @@ with open(lbl2rel_file, 'r') as ifile:
     lbl2rel = json.load(ifile)
     print(f"type(lbl2rel): {type(lbl2rel)}")
 
-KG = graph
+KG = KnowledgeGraph().graph
 WD = rdflib.Namespace('http://www.wikidata.org/entity/')
 WDT = rdflib.Namespace('http://www.wikidata.org/prop/direct/')
 DDIS = rdflib.Namespace('http://ddis.ch/atai/')

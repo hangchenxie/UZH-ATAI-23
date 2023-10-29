@@ -1,7 +1,7 @@
 from speakeasypy import Speakeasy, Chatroom
 from typing import List
 import time
-from .responsor import Responsor
+from chatbot.agent.responsor import Responsor
 
 
 DEFAULT_HOST_URL = 'https://speakeasy.ifi.uzh.ch'
