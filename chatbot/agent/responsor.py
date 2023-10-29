@@ -10,6 +10,14 @@ from chatbot import cache
 KG = KnowledgeGraph().graph
 path = Path(__file__).parents[2].joinpath("data", "property.json")
 
+label_flags = {
+    "MPAA film rating": {"use_embedding": True, "use_sparql": False},
+    "publication date": {"use_embedding": True, "use_sparql": False},
+    "box office": {"use_embedding": False, "use_sparql": True},
+    "IMDb ID": {"use_embedding": False, "use_sparql": True},
+    "image": {"use_embedding": False, "use_sparql": True}
+}
+
 
 
 class Responsor:
@@ -40,12 +48,13 @@ class Responsor:
         else:
             return "other"
 
-    def sparql_querier(self, ent_lbl, rel_lbl, ent_type):
+    def sparql_querier(self, ent_lbl, rel_lbl):
         rel_id = self.lbl2prop[rel_lbl[0]]
         print(f"rel_id: {rel_id}")
         print(type(rel_id))
         ent_lbl = ''.join(ent_lbl)
         rel_lbl = ''.join(rel_lbl)
+        rel_lbl = self.change_lbl_type(rel_lbl)
         q ='''
             PREFIX ddis: <http://ddis.ch/atai/>
             PREFIX wd: <http://www.wikidata.org/entity/>
@@ -75,13 +84,15 @@ class Responsor:
                 result = None
         return result
 
-    def change_type(self, type):
-        type = str(type)
-        if type == 'TITLE':
-            return 'movie'
+    def change_lbl_type(self, lbl):
+        if lbl == "MPAA film rating":
+            return "rating"
+        elif lbl == "publication date":
+            return "releaseDate"
+        elif lbl == "box office":
+            return "boxOffice"
         else:
-            type.lower()
-            return type
+            return lbl
 
     def convert_type(term):
         return int(term) if term.datatype == 'http://www.w3.org/2001/XMLSchema#integer' else str(term)
@@ -90,48 +101,70 @@ class Responsor:
     def response(self, message_text):
 
 
-            c = self.classify(message_text)
+        c = self.classify(message_text)
 
-            if c == "SPARQL":
-                try:
-                    answer = [[self.convert_type(t) for t in s] for s in self.graph.query(message_text)]
-                    resonse_text = f"{answer}"
-                except Exception as exception:
-                    resonse_text = f"Error: {type(exception).__name__}"
-            elif c in ["Wh- question", "How- question", "rank question", "recommendation", "other"]:
-                use_embedding = False
-                use_sparql = True
-                entity_dict, relation_dict = self.parser.parse_entity_relation(message_text)
-                print(f"entity_dict: {entity_dict}")
-                print(f"relation_dict: {relation_dict}")
-                ent_lbl = [entity_dict[k]["matched_lbl"] for k in entity_dict.keys()]
-                rel_lbl = [v["relation"] for v in relation_dict.values()]
-                print(f"ent_lbl: {ent_lbl}")
-                print(f"rel_lbl: {rel_lbl}")
-                ent_type = self.change_type((entity_dict[list(entity_dict.keys())[0]]["type"]))
-                print(f"ent_type: {ent_type}")
-                for lbl in ["box office", "publication date", "IMDb ID", "image"]:
-                    if lbl in rel_lbl:
-                        use_embedding = False
-                        use_sparql = True
-                    elif use_sparql:
-                        # TODO: use a sparql_querier class
-                        sparql_result = self.sparql_querier(ent_lbl, rel_lbl, ent_type)
-                        if bool(sparql_result):
-                            answer = sparql_result
-                            resonse_text = f"The answer from sparql: {answer}"
-                        else:
-                            use_sparql = False
-                            use_embedding = True
-                if use_embedding:
-                    labels = ent_lbl + rel_lbl
-                    emb_results = self.emb_calculator.get_most_likely_results(labels, 10)
-                    top_labels = [result['Label'] for result in emb_results[:3]]
-                    resonse_text = f"The answer from embeddings: {', '.join(top_labels)}"
+        if c == "SPARQL":
+            try:
+                answer = [[self.convert_type(t) for t in s] for s in self.graph.query(message_text)]
+                resonse_text = f"{answer}"
+            except Exception as exception:
+                resonse_text = f"Error: {type(exception).__name__}"
+        elif c in ["Wh- question", "How- question", "rank question", "recommendation", "other"]:
+            use_embedding = False
+            use_sparql = True
+            entity_dict, relation_dict = self.parser.parse_entity_relation(message_text)
+            print(f"entity_dict: {entity_dict}")
+            print(f"relation_dict: {relation_dict}")
+            ent_lbl = [entity_dict[k]["matched_lbl"] for k in entity_dict.keys()]
+            rel_lbl = [v["relation"] for v in relation_dict.values()]
+            print(f"ent_lbl: {ent_lbl}")
+            print(f"rel_lbl: {rel_lbl}")
+            # ent_type = self.change_type((entity_dict[list(entity_dict.keys())[0]]["type"]))
+            # print(f"ent_type: {ent_type}")
+            # for lbl in ["MPAA film rating", "publication date"]:
+            #     if lbl in rel_lbl:
+            #         use_embedding = True
+            #         use_sparql = False
+            # for lbl in ["box office", "publication date", "IMDb ID", "image"]:
+            #     if lbl in rel_lbl:
+            #         use_embedding = False
+            #         use_sparql = True
+            # if use_sparql:
+            #     # TODO: use a sparql_querier class
+            #     sparql_result = self.sparql_querier(ent_lbl, rel_lbl)
+            #     if bool(sparql_result):
+            #         answer = sparql_result
+            #         resonse_text = f"The answer from sparql: {answer}"
+            #     else:
+            #         use_sparql = False
+            #         use_embedding = True
+            # elif use_embedding:
+            #     labels = ent_lbl + rel_lbl
+            #     emb_results = self.emb_calculator.get_most_likely_results(labels, 10)
+            #     top_labels = [result['Label'] for result in emb_results[:3]]
+            #     resonse_text = f"The answer from embeddings: {', '.join(top_labels)}"
+            for lbl in rel_lbl:
+                if lbl in label_flags:
+                    use_embedding = label_flags[lbl]["use_embedding"]
+                    use_sparql = label_flags[lbl]["use_sparql"]
+
+            if use_sparql:
+                sparql_result = self.sparql_querier(ent_lbl, rel_lbl)
+                if bool(sparql_result):
+                    answer = sparql_result
+                    return f"The answer from sparql: {answer}"
+                else:
+                    use_sparql = False
+                    use_embedding = True
+
+            if use_embedding:
+                labels = ent_lbl + rel_lbl
+                emb_results = self.emb_calculator.get_most_likely_results(labels, 10)
+                top_labels = [result['Label'] for result in emb_results[:3]]
+                response_text = f"The answer from embeddings: {', '.join(top_labels)}"
             else:
-                resonse_text = f"Sorry I don't understand the question: '{message_text}'. Could you please rephase it?"
-
-            return resonse_text
+                response_text = f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+        return response_text
 
 if __name__ == "__main__":
     responsor = Responsor()
@@ -141,11 +174,12 @@ if __name__ == "__main__":
         'Who directed The Bridge on the River Kwai?',
         "Who is the screenwriter of The Masked Gang: Cyprus?",
         "What is the genre of Good Neighbors?",
+        "What is the MPAA film rating of Weathering with You?",
+        'When was "The Gofather" released?',
         # "What is the box office of The Princess and the Frog? ",
         # 'Can you tell me the publication date of Tom Meets Zizou? ',
         # 'Who is the executive producer of X-Men: First Class? '
-        # 'When was "The Gofather" released?',
-        # "What is the MPAA film rating of Weathering with You?",
+
     ]
     for question in questions:
         answer = responsor.response(question)
