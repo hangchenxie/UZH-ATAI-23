@@ -12,7 +12,7 @@ path = Path(__file__).parents[2].joinpath("data", "property.json")
 
 label_flags = {
     "MPAA film rating": {"use_embedding": True, "use_sparql": False},
-    "publication date": {"use_embedding": True, "use_sparql": False},
+    "publication date": {"use_embedding": False, "use_sparql": True},
     "box office": {"use_embedding": False, "use_sparql": True},
     "IMDb ID": {"use_embedding": False, "use_sparql": True},
     "image": {"use_embedding": False, "use_sparql": True}
@@ -55,17 +55,31 @@ class Responsor:
         ent_lbl = ''.join(ent_lbl)
         rel_lbl = ''.join(rel_lbl)
         rel_lbl = self.change_lbl_type(rel_lbl)
-        q ='''
-            PREFIX ddis: <http://ddis.ch/atai/>
-            PREFIX wd: <http://www.wikidata.org/entity/>
-            PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-            PREFIX schema: <http://schema.org/>
-        
-            SELECT ?lbl WHERE {{
-            ?movie rdfs:label "{}"@en .
-            ?movie wdt:{} ?{} .
-            ?{} rdfs:label ?lbl .
-                }}'''.format(ent_lbl, rel_id, rel_lbl, rel_lbl)
+        if rel_lbl == "releaseDate":
+            q = '''
+                PREFIX ddis: <http://ddis.ch/atai/>
+                PREFIX wd: <http://www.wikidata.org/entity/>
+                PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+                PREFIX schema: <http://schema.org/>
+
+                SELECT ?releaseDate WHERE {{
+                ?movie rdfs:label "{}"@en .
+                ?movie wdt:P31 wd:Q11424 . 
+                ?movie wdt:P577 ?releaseDate .
+                    }}'''.format(ent_lbl)
+            
+        else:
+            q ='''
+                PREFIX ddis: <http://ddis.ch/atai/>
+                PREFIX wd: <http://www.wikidata.org/entity/>
+                PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+                PREFIX schema: <http://schema.org/>
+
+                SELECT ?lbl WHERE {{
+                ?movie rdfs:label "{}"@en .
+                ?movie wdt:{} ?{} .
+                ?{} rdfs:label ?lbl .
+                    }}'''.format(ent_lbl, rel_id, rel_lbl, rel_lbl)
         print(f"q: {q}")
         q_result = self.graph.query(q)
         if q_result is None:
@@ -119,30 +133,6 @@ class Responsor:
             rel_lbl = [v["relation"] for v in relation_dict.values()]
             print(f"ent_lbl: {ent_lbl}")
             print(f"rel_lbl: {rel_lbl}")
-            # ent_type = self.change_type((entity_dict[list(entity_dict.keys())[0]]["type"]))
-            # print(f"ent_type: {ent_type}")
-            # for lbl in ["MPAA film rating", "publication date"]:
-            #     if lbl in rel_lbl:
-            #         use_embedding = True
-            #         use_sparql = False
-            # for lbl in ["box office", "publication date", "IMDb ID", "image"]:
-            #     if lbl in rel_lbl:
-            #         use_embedding = False
-            #         use_sparql = True
-            # if use_sparql:
-            #     # TODO: use a sparql_querier class
-            #     sparql_result = self.sparql_querier(ent_lbl, rel_lbl)
-            #     if bool(sparql_result):
-            #         answer = sparql_result
-            #         resonse_text = f"The answer from sparql: {answer}"
-            #     else:
-            #         use_sparql = False
-            #         use_embedding = True
-            # elif use_embedding:
-            #     labels = ent_lbl + rel_lbl
-            #     emb_results = self.emb_calculator.get_most_likely_results(labels, 10)
-            #     top_labels = [result['Label'] for result in emb_results[:3]]
-            #     resonse_text = f"The answer from embeddings: {', '.join(top_labels)}"
             for lbl in rel_lbl:
                 if lbl in label_flags:
                     use_embedding = label_flags[lbl]["use_embedding"]
@@ -169,13 +159,18 @@ class Responsor:
 if __name__ == "__main__":
     responsor = Responsor()
     questions = [
-        "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
-        "Who is the director of Good Will Huntin? ",
-        'Who directed The Bridge on the River Kwai?',
-        "Who is the screenwriter of The Masked Gang: Cyprus?",
-        "What is the genre of Good Neighbors?",
-        "What is the MPAA film rating of Weathering with You?",
+        # "Who is the screenwriter of The Masked Gang: Cyprus?",
+        # "What is the MPAA film rating of Weathering with You?",
+
         'When was "The Gofather" released?',
+
+        # "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
+        # "Who is the director of Good Will Huntin? ",
+        # 'Who directed The Bridge on the River Kwai?',
+        #
+        # "What is the genre of Good Neighbors?",
+
+
         # "What is the box office of The Princess and the Frog? ",
         # 'Can you tell me the publication date of Tom Meets Zizou? ',
         # 'Who is the executive producer of X-Men: First Class? '

@@ -13,7 +13,7 @@ entity_emb = np.load(embeds_path.joinpath('entity_embeds.npy'))
 relation_emb = np.load(embeds_path.joinpath('relation_embeds.npy'))
 entity_file = embeds_path.joinpath('entity_ids.del')
 relation_file = embeds_path.joinpath('relation_ids.del')
-lbl2rel_file = embeds_path.joinpath('lbl2rel.json')
+lbl2rel_file = embeds_path.joinpath('property.json')
 
 with open(entity_file, 'r') as ifile:
     ent2id = {rdflib.term.URIRef(ent): int(idx) for idx, ent in csv.reader(ifile, delimiter='\t')}
@@ -21,9 +21,9 @@ with open(entity_file, 'r') as ifile:
 with open(relation_file, 'r') as ifile:
     rel2id = {rdflib.term.URIRef(rel): int(idx) for idx, rel in csv.reader(ifile, delimiter='\t')}
     id2rel = {v: k for k, v in rel2id.items()}
-with open(lbl2rel_file, 'r') as ifile:
-    lbl2rel = json.load(ifile)
-    print(f"type(lbl2rel): {type(lbl2rel)}")
+with open(lbl2rel_file, 'r', encoding= 'utf-8') as ifile:
+    rel2lbl = json.load(ifile)
+    lbl2rel = {lbl: rel for rel, lbl in rel2lbl.items()}
 
 KG = KnowledgeGraph().graph
 WD = rdflib.Namespace('http://www.wikidata.org/entity/')
@@ -69,6 +69,6 @@ class EmbeddingCalculator:
 
 if __name__ == "__main__":
     test_emb_calculator = EmbeddingCalculator()
-    labels = ["GoldenEye 007", "director"]
+    labels = ["Weathering with You", "MPAA film rating"]
     test_results = test_emb_calculator.get_most_likely_results(labels, 3)
     print(test_results)
