@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import random
 from chatbot.parser.parser import MessageParser
 from chatbot.embedding.embedding_calculator import EmbeddingCalculator
 from chatbot.knowledge_graph.knowledge_graph import KnowledgeGraph
@@ -18,6 +18,17 @@ label_flags = {
     "image": {"use_embedding": False, "use_sparql": True}
 }
 
+sparql_response_templates = [
+    "The answer from sparql: {}",
+    "According to sparql, the answer is: {}",
+    "Sparql suggests that the answer could be: {}",
+]
+
+embedding_response_templates = [
+    "The answer from embeddings: {}",
+    "According to embeddings, the answer is: {}",
+    "Embeddings suggest that the answer could be: {}",
+]
 
 
 class Responsor:
@@ -81,7 +92,11 @@ class Responsor:
                 ?{} rdfs:label ?lbl .
                     }}'''.format(ent_lbl, rel_id, rel_lbl, rel_lbl)
         print(f"q: {q}")
-        q_result = self.graph.query(q)
+        try:
+            q_result = self.graph.query(q)
+        except Exception as exception:
+            print(f"Error: {type(exception).__name__}")
+            return None
         if q_result is None:
             return None
         else:
@@ -126,7 +141,11 @@ class Responsor:
         elif c in ["Wh- question", "How- question", "rank question", "recommendation", "other"]:
             use_embedding = False
             use_sparql = True
-            entity_dict, relation_dict = self.parser.parse_entity_relation(message_text)
+            try:
+                entity_dict, relation_dict = self.parser.parse_entity_relation(message_text)
+            except Exception as exception:
+                print(f"Error: {type(exception).__name__}")
+                return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
             print(f"entity_dict: {entity_dict}")
             print(f"relation_dict: {relation_dict}")
             ent_lbl = [entity_dict[k]["matched_lbl"] for k in entity_dict.keys()]
@@ -142,16 +161,22 @@ class Responsor:
                 sparql_result = self.sparql_querier(ent_lbl, rel_lbl)
                 if bool(sparql_result):
                     answer = sparql_result
-                    return f"The answer from sparql: {answer}"
+                    template = random.choice(sparql_response_templates)
+                    return template.format(answer)
                 else:
                     use_sparql = False
                     use_embedding = True
 
             if use_embedding:
                 labels = ent_lbl + rel_lbl
-                emb_results = self.emb_calculator.get_most_likely_results(labels, 10)
+                try:
+                    emb_results = self.emb_calculator.get_most_likely_results(labels, 10)
+                except Exception as exception:
+                    print(f"Error: {type(exception).__name__}")
+                    return f"Someting went wrong with the embeddings. Please try again."
                 top_labels = [result['Label'] for result in emb_results[:3]]
-                response_text = f"The answer from embeddings: {', '.join(top_labels)}"
+                template = random.choice(embedding_response_templates)
+                response_text = template.format(', '.join(top_labels))
             else:
                 response_text = f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
         return response_text
