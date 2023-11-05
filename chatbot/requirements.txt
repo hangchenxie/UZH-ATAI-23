@@ -46,7 +46,7 @@ jupyter_client==7.4.9
 jupyter_core @ file:///Users/runner/miniforge3/conda-bld/jupyter_core_1695828053727/work
 jupyter_server==2.7.3
 jupyter_server_terminals==0.4.4
-jupyterlab==2.0.1
+jupyterlab==2.2.10
 jupyterlab-pygments==0.2.2
 jupyterlab-server==1.0.9
 kaleido==0.2.1
