@@ -29,7 +29,6 @@ setuptools==68.0.0
 six==1.16.0
 spark-nlp==5.1.4
 sparknlp==1.0.0
-speakeasypy @ file:///home/lagshaggy/dev/ATAI-Project/speakeasy-python-client-library/dist/speakeasypy-1.0.0-py3-none-any.whl#sha256=87f3bca5e727e70fc3dd7ec5e61e306c4052310b0f8881fcc4e38a432b8c3282
 threadpoolctl==3.2.0
 tzdata==2023.3
 urllib3==1.26.18
