@@ -113,5 +113,5 @@ wcwidth @ file:///home/conda/feedstock_root/build_artifacts/wcwidth_169625515485
 webcolors==1.13
 webencodings==0.5.1
 websocket-client==1.6.3
-Werkzeug==3.0.0
+Werkzeug==3.0.1
 zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1695255097490/work
