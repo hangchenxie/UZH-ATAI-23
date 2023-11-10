@@ -3,19 +3,20 @@ import random
 from chatbot.parser.parser import MessageParser
 from chatbot.embedding.embedding_calculator import EmbeddingCalculator
 from chatbot.knowledge_graph.knowledge_graph import KnowledgeGraph
+from chatbot.image.image_process import ImageProcess
 import json
 from pandas import DataFrame
 from chatbot import cache
 
 KG = KnowledgeGraph().graph
-path = Path(__file__).parents[2].joinpath("data", "property.json")
+path = Path(__file__).parents[1].joinpath("data", "property.json")
 
 label_flags = {
-    "MPAA film rating": {"use_embedding": True, "use_sparql": False},
-    "publication date": {"use_embedding": False, "use_sparql": True},
-    "box office": {"use_embedding": False, "use_sparql": True},
-    "IMDb ID": {"use_embedding": False, "use_sparql": True},
-    "image": {"use_embedding": False, "use_sparql": True}
+    "MPAA film rating": {"use_embedding": True, "use_sparql": False, "use_image": False},
+    "publication date": {"use_embedding": False, "use_sparql": True, "use_image": False},
+    "box office": {"use_embedding": False, "use_sparql": True, "use_image": False},
+    "IMDb ID": {"use_embedding": False, "use_sparql": True, "use_image": False},
+    "image": {"use_embedding": False, "use_sparql": False, "use_image": True},
 }
 
 sparql_response_templates = [
@@ -38,6 +39,7 @@ class Responsor:
         self.parser = MessageParser()
         self.emb_calculator = EmbeddingCalculator()
         self.graph = KG
+        self.image_process = ImageProcess()
         with open(path,"r",encoding="utf-8") as f:
             self.prop2lbl = json.load(f)
         self.lbl2prop = {lbl: prop for prop, lbl in self.prop2lbl.items()}
@@ -139,8 +141,8 @@ class Responsor:
             except Exception as exception:
                 resonse_text = f"Error: {type(exception).__name__}"
         elif c in ["Wh- question", "How- question", "rank question", "recommendation", "other"]:
-            use_embedding = False
             use_sparql = True
+            use_embedding = False
             try:
                 entity_dict, relation_dict = self.parser.parse_entity_relation(message_text)
             except Exception as exception:
@@ -156,6 +158,7 @@ class Responsor:
                 if lbl in label_flags:
                     use_embedding = label_flags[lbl]["use_embedding"]
                     use_sparql = label_flags[lbl]["use_sparql"]
+                    use_image = label_flags[lbl]["use_image"]
 
             if use_sparql:
                 sparql_result = self.sparql_querier(ent_lbl, rel_lbl)
@@ -177,6 +180,15 @@ class Responsor:
                 top_labels = [result['Label'] for result in emb_results[:3]]
                 template = random.choice(embedding_response_templates)
                 response_text = template.format(', '.join(top_labels))
+
+            if use_image:
+                ent_identifier = self.emb_calculator.get_entity_identifier(ent_lbl[0])
+                image_url, image_type = self.image_process.get_image(ent_identifier.split("/")[-1])
+                print(f"image_url: {image_url}")
+                print(f"image_type: {image_type}")
+                response_text = 'image:' + image_url.replace(".jpg", "")
+                print(f"response_text: {response_text}")
+
             else:
                 response_text = f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
         return response_text
@@ -186,19 +198,22 @@ if __name__ == "__main__":
     questions = [
         # "Who is the screenwriter of The Masked Gang: Cyprus?",
         # "What is the MPAA film rating of Weathering with You?",
-
-        'When was "The Gofather" released?',
-
+        #
+        # 'When was "The Gofather" released?',
+        #
         # "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
         # "Who is the director of Good Will Huntin? ",
         # 'Who directed The Bridge on the River Kwai?',
         #
         # "What is the genre of Good Neighbors?",
 
-
         # "What is the box office of The Princess and the Frog? ",
         # 'Can you tell me the publication date of Tom Meets Zizou? ',
         # 'Who is the executive producer of X-Men: First Class? '
+
+        'Show me a picture of Halle Berry.',
+        'What does Julia Roberts look like?',
+        'Let me know what Sandra Bullock looks like.'
 
     ]
     for question in questions:

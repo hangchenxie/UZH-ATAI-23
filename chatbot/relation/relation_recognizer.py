@@ -24,6 +24,7 @@ class RelationRecognizer:
             for e in self.lbl2relation:
                 ratio = fuzz.ratio(e, text.lower())
                 ratio_list[e] = float(ratio)
+            # print("ratio_list:", ratio_list)
             desired_ratio = max(ratio_list.values())
             # Get the key (keyword) corresponding to the maximum ratio
             desired_key = [key for key, value in ratio_list.items() if value == desired_ratio][0]
@@ -38,17 +39,20 @@ class RelationRecognizer:
 if __name__ == '__main__':
     rr = RelationRecognizer()
     questions = [
-        "Who is the director of Star Wars: Episode VI - Return of the Jedi?",
-        "Who is the director of Star Wars: Episde VI - Return of the Jedi?",
-        "Who is the director of Good Will Hunting? ",
-        'Who directed The Bridge on the River Kwai?',
-        "Who is the screenwriter of The Masked Gang: Cyprus?",
-        "What is the MPAA film rating of Weathering with You?",
-        "What is the genre of Good Neighbors?",
-        "What is the box office of The Princess and the Frog? ",
-        'Can you tell me the publication date of Tom Meets Zizou? ',
-        'Who is the executive producer of X-Men: First Class? '
-        'When was "The Godfather" released?'
+        # "Who is the director of Star Wars: Episode VI - Return of the Jedi?",
+        # "Who is the director of Star Wars: Episde VI - Return of the Jedi?",
+        # "Who is the director of Good Will Hunting? ",
+        # 'Who directed The Bridge on the River Kwai?',
+        # "Who is the screenwriter of The Masked Gang: Cyprus?",
+        # "What is the MPAA film rating of Weathering with You?",
+        # "What is the genre of Good Neighbors?",
+        # "What is the box office of The Princess and the Frog? ",
+        # 'Can you tell me the publication date of Tom Meets Zizou? ',
+        # 'Who is the executive producer of X-Men: First Class? '
+        # 'When was "The Godfather" released?'
+        'Show me a picture of Halle Berry.',
+        'What does Julia Roberts look like?',
+        'Let me know what Sandra Bullock looks like.'
     ]
     for question in questions:
         print(question)

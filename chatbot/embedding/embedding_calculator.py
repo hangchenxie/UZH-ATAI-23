@@ -45,11 +45,17 @@ class EmbeddingCalculator:
     def get_embedding(self, label):
         print(f"label: {label}")
         if label in self.lbl2rel.keys():
-            return relation_emb[rel2id[WDT[lbl2rel[label]]]]
+            return relation_emb[rel2id[WDT[self.lbl2rel[label]]]]
         elif label in self.lbl2ent.keys():
             return entity_emb[ent2id[self.lbl2ent[label]]]
         else:
-            return np.zeros(256)    
+            return np.zeros(256)
+
+    def get_entity_identifier(self, label):
+        if label in self.lbl2ent.keys():
+            return self.lbl2ent[label]
+        else:
+            return None
 
 
     def get_most_likely_results(self, labels, N):
@@ -69,6 +75,9 @@ class EmbeddingCalculator:
 
 if __name__ == "__main__":
     test_emb_calculator = EmbeddingCalculator()
-    labels = ["Weathering with You", "MPAA film rating"]
-    test_results = test_emb_calculator.get_most_likely_results(labels, 3)
+    labels = ["Bruce Willis"]
+    # test_results = test_emb_calculator.get_most_likely_results(labels, 3)
+    test_results = test_emb_calculator.get_entity_identifier(labels[0])
     print(test_results)
+    ent_identifier = test_results.split("/")[-1]
+    print(ent_identifier)

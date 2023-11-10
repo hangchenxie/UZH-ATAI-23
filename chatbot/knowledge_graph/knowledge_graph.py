@@ -9,7 +9,7 @@ import pandas as pd
 import rdflib
 from collections import defaultdict, Counter
 from pathlib import Path
-from .. import cache
+from chatbot import cache
 
 
 graph_path = Path(__file__).parents[1].joinpath("data", "14_graph.nt")
@@ -31,3 +31,24 @@ class KnowledgeGraph:
 
     def query(self, q):
         return self.graph.query(q)
+
+
+
+
+if __name__ == "__main__":
+    kg = KnowledgeGraph()
+    # imdb_rel = WDT.P345
+    # ent = WD.Q2680
+    id = [str(s.imdb_id) for s in kg.query('''
+    PREFIX ddis: <http://ddis.ch/atai/>
+    PREFIX wd: <http://www.wikidata.org/entity/>
+    PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+    PREFIX schema: <http://schema.org/>
+
+    SELECT ?imdb_id WHERE {
+        wd:Q2680 wdt:P345 ?imdb_id .
+
+    }
+    ''')]
+
+    print(type(id))
