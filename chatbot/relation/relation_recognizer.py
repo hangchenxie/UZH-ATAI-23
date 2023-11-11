@@ -50,9 +50,11 @@ if __name__ == '__main__':
         # 'Can you tell me the publication date of Tom Meets Zizou? ',
         # 'Who is the executive producer of X-Men: First Class? '
         # 'When was "The Godfather" released?'
-        'Show me a picture of Halle Berry.',
-        'What does Julia Roberts look like?',
-        'Let me know what Sandra Bullock looks like.'
+        # 'Show me a picture of Halle Berry.',
+        # 'What does Julia Roberts look like?',
+        # 'Let me know what Sandra Bullock looks like.'
+        "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
+        "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
     ]
     for question in questions:
         print(question)

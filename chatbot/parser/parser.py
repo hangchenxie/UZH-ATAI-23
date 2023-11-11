@@ -14,7 +14,7 @@ class MessageParser:
         for ent in ent_dict.keys():
             t_rem = t.replace(ent, "")
         # TODO: use a relation extractor class
-        for old, new in [(r"Who|What|When|How many|Tell me|does|do|did|let|us|me|is|are|\bthe\b|\bof\b|\?","")]:
+        for old, new in [(r"Who|What|When|How many|can you|Tell me|given that|does|do|did|let|us|me|is|are|I like|movie like\bthe\b|\bof\b|\?","")]:
             t_rem = re.sub(old, new, t_rem, flags=re.IGNORECASE)
             t_rem = t_rem.strip().replace('"', '')
             print("parsed_question:", t_rem)
@@ -34,9 +34,11 @@ if __name__ == "__main__":
         # "What is the box office of The Princess and the Frog? ",
         # 'Can you tell me the publication date of Tom Meets Zizou? ',
         # 'Who is the executive producer of X-Men: First Class? '
-        'Show me a picture of Halle Berry.',
-        'What does Julia Roberts look like?',
-        'Let me know what Sandra Bullock looks like.'
+        # 'Show me a picture of Halle Berry.',
+        # 'What does Julia Roberts look like?',
+        # 'Let me know what Sandra Bullock looks like.'
+        "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
+        "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
     ]
     for question in questions:
         answer = ms.parse_entity_relation(question)

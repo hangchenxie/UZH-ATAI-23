@@ -4,6 +4,7 @@ from chatbot.parser.parser import MessageParser
 from chatbot.embedding.embedding_calculator import EmbeddingCalculator
 from chatbot.knowledge_graph.knowledge_graph import KnowledgeGraph
 from chatbot.image.image_process import ImageProcess
+from chatbot.entity.entity_recognizer import EntityRecognizer
 import json
 from pandas import DataFrame
 from chatbot import cache
@@ -17,6 +18,7 @@ label_flags = {
     "box office": {"use_embedding": False, "use_sparql": True, "use_image": False},
     "IMDb ID": {"use_embedding": False, "use_sparql": True, "use_image": False},
     "image": {"use_embedding": False, "use_sparql": False, "use_image": True},
+    "recommend": {"use_embedding": False, "use_sparql": False, "use_image": False, "use_recommendation": True},
 }
 
 sparql_response_templates = [
@@ -31,6 +33,11 @@ embedding_response_templates = [
     "Embeddings suggest that the answer could be: {}",
 ]
 
+recommendation_response_templates = [
+    "The answer from recommendation: {}",
+    "According to recommendation, the answer is: {}",
+    "Recommendation suggests that the answer could be: {}",
+]
 
 class Responsor:
 
@@ -40,6 +47,7 @@ class Responsor:
         self.emb_calculator = EmbeddingCalculator()
         self.graph = KG
         self.image_process = ImageProcess()
+        self.ent_recognizer = EntityRecognizer()
         with open(path,"r",encoding="utf-8") as f:
             self.prop2lbl = json.load(f)
         self.lbl2prop = {lbl: prop for prop, lbl in self.prop2lbl.items()}
@@ -159,6 +167,7 @@ class Responsor:
                     use_embedding = label_flags[lbl]["use_embedding"]
                     use_sparql = label_flags[lbl]["use_sparql"]
                     use_image = label_flags[lbl]["use_image"]
+                    use_recommendation = label_flags[lbl]["use_recommendation"]
 
             if use_sparql:
                 sparql_result = self.sparql_querier(ent_lbl, rel_lbl)
@@ -189,6 +198,26 @@ class Responsor:
                 response_text = 'image:' + image_url.replace(".jpg", "")
                 print(f"response_text: {response_text}")
 
+            if use_recommendation:
+                entities = ', '.join(entity for entity in entity_dict.keys())
+                entities = entities.replace(", and", ", ")
+                entities = [entity for entity in entities.split(", ")]
+                print(f"entities: {entities}")
+                recommendation = self.emb_calculator.get_recommendation(entities)[:3]
+                print(f"recommendation: {recommendation}")
+                answer = recommendation
+
+                response_text = f"Here are some movies you might like: {recommendation}"
+
+
+
+                # ent_dics = [self.ent_recognizer.get_entities(entity) for entity in entities]
+                # print(f"ent_dics: {ent_dics}")
+                # ent_lbls = [ent_dic[k]["matched_lbl"] for ent_dic in ent_dics for k in ent_dic.keys()]
+                # print(f"ent_lbls: {ent_lbls}")
+
+
+
             else:
                 response_text = f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
         return response_text
@@ -211,9 +240,9 @@ if __name__ == "__main__":
         # 'Can you tell me the publication date of Tom Meets Zizou? ',
         # 'Who is the executive producer of X-Men: First Class? '
 
-        'Show me a picture of Halle Berry.',
-        'What does Julia Roberts look like?',
-        'Let me know what Sandra Bullock looks like.'
+        "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
+        "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
+
 
     ]
     for question in questions:

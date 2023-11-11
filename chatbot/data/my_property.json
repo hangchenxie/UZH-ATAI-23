@@ -6,6 +6,7 @@
     "P1657": [ "MPAA film rating", "score", "stars", "rate"],
     "P161": [ "cast member", "actor", "actress", "played"],
     "image": ["image", "picture", "photo", "poster", "look like","portrait", "depiction", "illustration", "drawing", "sketch", "snapshot"],
+    "recommend" : ["recommend", "suggest", "advice", "advise", "propose", "suggest", "recommendation", "suggestion", "advice", "advise", "proposal", "recommend movies like"],
     "P1431": [ "executive producer"],
     "P2142": [ "box office"]
 }
