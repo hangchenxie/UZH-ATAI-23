@@ -203,21 +203,11 @@ class Responsor:
                 entities = entities.replace(", and", ", ")
                 entities = [entity for entity in entities.split(", ")]
                 print(f"entities: {entities}")
-                recommendation = self.emb_calculator.get_recommendation(entities)[:3]
+                recommendation = self.emb_calculator.get_recommendation(entities)[:10]
+                recommendation = random.sample(recommendation, 3)
                 print(f"recommendation: {recommendation}")
-                answer = recommendation
-
-                response_text = f"Here are some movies you might like: {recommendation}"
-
-
-
-                # ent_dics = [self.ent_recognizer.get_entities(entity) for entity in entities]
-                # print(f"ent_dics: {ent_dics}")
-                # ent_lbls = [ent_dic[k]["matched_lbl"] for ent_dic in ent_dics for k in ent_dic.keys()]
-                # print(f"ent_lbls: {ent_lbls}")
-
-
-
+                template = random.choice(recommendation_response_templates)
+                response_text = template.format(', '.join(recommendation))
             else:
                 response_text = f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
         return response_text
@@ -240,7 +230,7 @@ if __name__ == "__main__":
         # 'Can you tell me the publication date of Tom Meets Zizou? ',
         # 'Who is the executive producer of X-Men: First Class? '
 
-        "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
+        # "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
         "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
 
 

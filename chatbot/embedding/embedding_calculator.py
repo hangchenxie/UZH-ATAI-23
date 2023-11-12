@@ -5,6 +5,7 @@ import rdflib
 import json
 import pandas as pd
 
+
 from difflib import get_close_matches
 from sklearn.metrics import pairwise_distances
 from rdflib import Namespace
@@ -99,17 +100,22 @@ class EmbeddingCalculator:
         dist = pairwise_distances(avg.reshape(1, -1), entity_emb).reshape(-1).argsort()
         most_likely_results_df = pd.DataFrame([
             (id2ent[idx][len(WD):], self.ent2lbl[id2ent[idx]], dist[idx], rank+1)
-            for rank, idx in enumerate(dist[:10]) if id2ent[idx][len(WD):] not in movies_list],
+            for rank, idx in enumerate(dist[:30])
+            if self.ent2lbl[id2ent[idx]] not in movies_list and
+               "Sony Pictures Universe of Marvel Characters" not in self.ent2lbl[id2ent[idx]]],
             columns=('Entity', 'Label', 'Score', 'Rank'))
         most_likely_results = most_likely_results_df.to_dict('records')
-        return most_likely_results
+        print("most_likely_results:", most_likely_results)
+        recommended_movies = [result['Label'] for result in most_likely_results]
+        return recommended_movies
 
 
 
 
 if __name__ == "__main__":
     test_emb_calculator = EmbeddingCalculator()
-    entities = ['The Lion King', 'Pocahontas', ' The Beauty and the Beast']
+    # entities = ['The Lion King', 'Pocahontas', ' The Beauty and the Beast']
+    entities = ['Nightmare on Elm Street', 'Friday the 13th', 'Halloween']
     result = test_emb_calculator.get_recommendation(entities)
     print(result)
     # labels = ["Bruce Willis"]
