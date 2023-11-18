@@ -43,6 +43,11 @@ class EmbeddingCalculator:
         self.ent2lbl = {ent: str(lbl) for ent, lbl in self.graph.subject_objects(RDFS.label)}
         self.lbl2ent = {lbl: ent for ent, lbl in self.ent2lbl.items()}
         self.lbl2rel = dict(lbl2rel)
+        self.rel2lbl = dict(rel2lbl)
+        self.id2ent = id2ent
+        self.ent2id = ent2id
+        self.ent_emb = entity_emb
+        self.WD = WD
         self.movie_ent2lbl = {}
         self.movie_ent2id = {}
 
@@ -59,6 +64,12 @@ class EmbeddingCalculator:
     def get_entity_identifier(self, label):
         if label in self.lbl2ent.keys():
             return self.lbl2ent[label]
+        else:
+            return None
+
+    def get_relation_identifier(self, label):
+        if label in self.lbl2rel.keys():
+            return self.lbl2rel[label]
         else:
             return None
 
@@ -100,14 +111,18 @@ class EmbeddingCalculator:
         dist = pairwise_distances(avg.reshape(1, -1), entity_emb).reshape(-1).argsort()
         most_likely_results_df = pd.DataFrame([
             (id2ent[idx][len(WD):], self.ent2lbl[id2ent[idx]], dist[idx], rank+1)
-            for rank, idx in enumerate(dist[:30])
+            for rank, idx in enumerate(dist[:20])
             if self.ent2lbl[id2ent[idx]] not in movies_list and
                "Sony Pictures Universe of Marvel Characters" not in self.ent2lbl[id2ent[idx]]],
             columns=('Entity', 'Label', 'Score', 'Rank'))
+        # most_likely_results_df = most_likely_results_df[most_likely_results_df['Genre'].isin(genres_list)]
         most_likely_results = most_likely_results_df.to_dict('records')
         print("most_likely_results:", most_likely_results)
         recommended_movies = [result['Label'] for result in most_likely_results]
         return recommended_movies
+
+
+
 
 
 
