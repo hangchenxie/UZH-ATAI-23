@@ -12,7 +12,7 @@ from pandas import DataFrame
 from chatbot import cache
 
 KG = KnowledgeGraph().graph
-path = Path(__file__).parents[1].joinpath("data", "property.json")
+path = Path(__file__).parents[1].joinpath("data", "rel2lbl.json")
 
 label_flags = {
     "MPAA film rating": {"use_embedding": True, "use_sparql": False, "use_image": False, "use_recommendation": False},
@@ -54,8 +54,8 @@ class Responsor:
         self.recommend = Recommend()
         self.crowdsource = CrowdSource()
         with open(path,"r",encoding="utf-8") as f:
-            self.prop2lbl = json.load(f)
-        self.lbl2prop = {lbl: prop for prop, lbl in self.prop2lbl.items()}
+            self.rel2lbl = json.load(f)
+        self.lbl2rel = {lbl: prop for prop, lbl in self.rel2lbl.items()}
 
 
     # TODO: classify message_text by patterns
@@ -75,7 +75,7 @@ class Responsor:
             return "other"
 
     def sparql_querier(self, ent_lbl, rel_lbl):
-        rel_id = self.lbl2prop[rel_lbl[0]]
+        rel_id = self.lbl2rel[rel_lbl[0]]
         print(f"rel_id: {rel_id}")
         print(type(rel_id))
         ent_lbl = ''.join(ent_lbl)
