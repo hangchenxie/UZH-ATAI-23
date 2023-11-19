@@ -5,6 +5,8 @@ from chatbot.embedding.embedding_calculator import EmbeddingCalculator
 from chatbot.knowledge_graph.knowledge_graph import KnowledgeGraph
 from chatbot.image.image_process import ImageProcess
 from chatbot.entity.entity_recognizer import EntityRecognizer
+from chatbot.recommend.recommend import Recommend
+from chatbot.crowdsource.crowdsource import CrowdSource
 import json
 from pandas import DataFrame
 from chatbot import cache
@@ -13,12 +15,13 @@ KG = KnowledgeGraph().graph
 path = Path(__file__).parents[1].joinpath("data", "property.json")
 
 label_flags = {
-    "MPAA film rating": {"use_embedding": True, "use_sparql": False, "use_image": False},
-    "publication date": {"use_embedding": False, "use_sparql": True, "use_image": False},
-    "box office": {"use_embedding": False, "use_sparql": True, "use_image": False},
-    "IMDb ID": {"use_embedding": False, "use_sparql": True, "use_image": False},
-    "image": {"use_embedding": False, "use_sparql": False, "use_image": True},
+    "MPAA film rating": {"use_embedding": True, "use_sparql": False, "use_image": False, "use_recommendation": False},
+    "publication date": {"use_embedding": False, "use_sparql": True, "use_image": False, "use_recommendation": False},
+    "IMDb ID": {"use_embedding": False, "use_sparql": True, "use_image": False, "use_recommendation": False},
+    "image": {"use_embedding": False, "use_sparql": False, "use_image": True, "use_recommendation": False},
     "recommend": {"use_embedding": False, "use_sparql": False, "use_image": False, "use_recommendation": True},
+    "executive producer": {"use_embedding": False, "use_sparql": False, "use_image": False, "use_recommendation": False, "use_crowdsource": True},
+    "box office": {"use_embedding": False, "use_sparql": False, "use_image": False, "use_recommendation": False, "use_crowdsource": True},
 }
 
 sparql_response_templates = [
@@ -48,6 +51,8 @@ class Responsor:
         self.graph = KG
         self.image_process = ImageProcess()
         self.ent_recognizer = EntityRecognizer()
+        self.recommend = Recommend()
+        self.crowdsource = CrowdSource()
         with open(path,"r",encoding="utf-8") as f:
             self.prop2lbl = json.load(f)
         self.lbl2prop = {lbl: prop for prop, lbl in self.prop2lbl.items()}
@@ -151,6 +156,9 @@ class Responsor:
         elif c in ["Wh- question", "How- question", "rank question", "recommendation", "other"]:
             use_sparql = True
             use_embedding = False
+            use_image = False
+            use_recommendation = False
+            use_crowdsource = False
             try:
                 entity_dict, relation_dict = self.parser.parse_entity_relation(message_text)
             except Exception as exception:
@@ -168,6 +176,7 @@ class Responsor:
                     use_sparql = label_flags[lbl]["use_sparql"]
                     use_image = label_flags[lbl]["use_image"]
                     use_recommendation = label_flags[lbl]["use_recommendation"]
+                    use_crowdsource = label_flags[lbl]["use_crowdsource"]
 
             if use_sparql:
                 sparql_result = self.sparql_querier(ent_lbl, rel_lbl)
@@ -176,7 +185,24 @@ class Responsor:
                     template = random.choice(sparql_response_templates)
                     return template.format(answer)
                 else:
-                    use_sparql = False
+                    use_crowdsource = True
+
+            if use_crowdsource:
+                ent_identifier = self.emb_calculator.get_entity_identifier(ent_lbl[0])
+                rel_identifier = self.emb_calculator.get_relation_identifier(rel_lbl[0])
+                print(f"ent_identifier: {ent_identifier}")
+                print(f"rel_identifier: {rel_identifier}")
+                s = "wd:" + str(ent_identifier.split("/")[-1])
+                p = "wdt:" + str(rel_identifier)
+                print (f"s: {s}")
+                print (f"p: {p}")
+                if bool(self.crowdsource.search_crowdsource(s, p)):
+                    o,support_votes, reject_votes, kappa = self.crowdsource.search_crowdsource(s, p)
+                    if o.startswith("wd:"):
+                        o = o.replace("wd:", "")
+                        o = self.emb_calculator.ent2lbl[self.emb_calculator.WD[o]]
+                    response_text= f"According to crowdsource, the answer is: {o}, the support votes are: {support_votes}, the reject votes are: {reject_votes}, the inter-rater agreement is: {kappa} "
+                else:
                     use_embedding = True
 
             if use_embedding:
@@ -203,13 +229,17 @@ class Responsor:
                 entities = entities.replace(", and", ", ")
                 entities = [entity for entity in entities.split(", ")]
                 print(f"entities: {entities}")
-                recommendation = self.emb_calculator.get_recommendation(entities)[:10]
+                recommendation = self.recommend.get_recommendation(entities)[:10]
                 recommendation = random.sample(recommendation, 3)
                 print(f"recommendation: {recommendation}")
                 template = random.choice(recommendation_response_templates)
                 response_text = template.format(', '.join(recommendation))
+
+
             else:
                 response_text = f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+
+
         return response_text
 
 if __name__ == "__main__":
@@ -219,6 +249,7 @@ if __name__ == "__main__":
         # "What is the MPAA film rating of Weathering with You?",
         #
         # 'When was "The Gofather" released?',
+        # 'Can you tell me the publication date of Tom Meets Zizou? ',#the answer is 2010-10-01 which is different from the answer from crowdsource which is 2011-01-01
         #
         # "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
         # "Who is the director of Good Will Huntin? ",
@@ -226,13 +257,19 @@ if __name__ == "__main__":
         #
         # "What is the genre of Good Neighbors?",
 
-        # "What is the box office of The Princess and the Frog? ",
-        # 'Can you tell me the publication date of Tom Meets Zizou? ',
-        # 'Who is the executive producer of X-Men: First Class? '
+        "What is the box office of The Princess and the Frog? ",
+        "Who is the executive producer of X-Men: First Class? ",
+        "What is the birthplace of Christopher Nolan? ",
 
         # "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
-        "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
+        # "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
 
+        # 'what is the genre of "The Lion King"? ',
+        # 'what is the genre of "Pocahontas"? ',
+        # 'what is the genre of "The Beauty and the Beast"? ',
+        # 'what is the genre of "Nightmare on Elm Street"? ',
+        # 'what is the genre of "Friday the 13th"? ',
+        # 'what is the genre of "Halloween"? ',
 
     ]
     for question in questions:

@@ -14,7 +14,7 @@ class MessageParser:
         for ent in ent_dict.keys():
             t_rem = t.replace(ent, "")
         # TODO: use a relation extractor class
-        for old, new in [(r"Who|What|When|How many|can you|Tell me|given that|does|do|did|let|us|me|is|are|I like|movie like\bthe\b|\bof\b|\?","")]:
+        for old, new in [(r"Who|What|When|How many|can you|Tell me|given that|does|do|did|let|us|me|is|are|I like|movie like\b|\bof\b|\?","")]:
             t_rem = re.sub(old, new, t_rem, flags=re.IGNORECASE)
             t_rem = t_rem.strip().replace('"', '')
             print("parsed_question:", t_rem)

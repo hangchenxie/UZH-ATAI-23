@@ -11,24 +11,16 @@ from chatbot.embedding.embedding_calculator import EmbeddingCalculator
 movies_path = Path(__file__).parents[1].joinpath("data", "entity_movie.csv")
 movies_df = pd.read_csv(movies_path)
 movies_df = movies_df[movies_df['Movie'].notna()]
+# genres_path = Path(__file__).parents[1].joinpath("data", "movies_genres.csv")
+# genres_df = pd.read_csv(genres_path)
 
 class Recommend(EmbeddingCalculator):
     def get_recommendation(self, entities):
-        # getAllMovies = [[str(s), str(lbl)] for s, lbl in self.graph.query('''
-        # PREFIX ddis: <http://ddis.ch/atai/>
-        # PREFIX wd: <http://www.wikidata.org/entity/>
-        # PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-        # PREFIX schema: <http://schema.org/>
-        #
-        # SELECT ?movie ?lbl WHERE {
-        #         ?movie wdt:P31 wd:Q11424 .
-        #         ?movie rdfs:label ?lbl .
-        #     }
-        # ''')]
-        # movie_lbls = [lbl for s, lbl in getAllMovies]
         movie_lbls = movies_df['Movie'].tolist()
         movies_list = [get_close_matches(ent.strip(), movie_lbls)[0] for ent in entities]
         print("movies_list:", movies_list)
+        # genres_list = [genres_df.loc[genres_df['title'] == movie, 'genres'].values[0].split('|') for movie in movies_list]
+        # genres_list = [genres_df.loc[genres_df['title'] == movie, 'genres'].values[0].split('|') if not genres_df.loc[genres_df['title'] == movie, 'genres'].empty else [] for movie in movies_list]
         movies_id = [self.ent2id[self.lbl2ent[movie]] for movie in movies_list]
         print("movies_id:", movies_id)
         movies_emb = np.array([self.ent_emb[i] for i in movies_id])
@@ -45,6 +37,8 @@ class Recommend(EmbeddingCalculator):
         print("most_likely_results:", most_likely_results)
         recommended_movies = [result['Label'] for result in most_likely_results]
         return recommended_movies
+
+
 if __name__ == "__main__":
     test = Recommend()
     # entities = ['The Lion King', 'Pocahontas', ' The Beauty and the Beast']

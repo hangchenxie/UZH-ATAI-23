@@ -16,7 +16,7 @@ entity_emb = np.load(embeds_path.joinpath('entity_embeds.npy'))
 relation_emb = np.load(embeds_path.joinpath('relation_embeds.npy'))
 entity_file = embeds_path.joinpath('entity_ids.del')
 relation_file = embeds_path.joinpath('relation_ids.del')
-lbl2rel_file = embeds_path.joinpath('property.json')
+lbl2rel_file = embeds_path.joinpath('rel2lbl.json')
 
 with open(entity_file, 'r') as ifile:
     ent2id = {rdflib.term.URIRef(ent): int(idx) for idx, ent in csv.reader(ifile, delimiter='\t')}
@@ -67,6 +67,7 @@ class EmbeddingCalculator:
         else:
             return None
 
+
     def get_relation_identifier(self, label):
         if label in self.lbl2rel.keys():
             return self.lbl2rel[label]
@@ -89,37 +90,37 @@ class EmbeddingCalculator:
         return most_likely_results
 
 
-    def get_recommendation(self, entities):
-        getAllMovies = [[str(s), str(lbl)] for s, lbl in self.graph.query('''
-        PREFIX ddis: <http://ddis.ch/atai/>
-        PREFIX wd: <http://www.wikidata.org/entity/>
-        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-        PREFIX schema: <http://schema.org/>
-
-        SELECT ?movie ?lbl WHERE {
-                ?movie wdt:P31 wd:Q11424 .
-                ?movie rdfs:label ?lbl .
-            }
-        ''')]
-        movie_lbls = [lbl for s, lbl in getAllMovies]
-        movies_list = [get_close_matches(ent.strip(), movie_lbls)[0] for ent in entities]
-        print("movies_list:", movies_list)
-        movies_id = [ent2id[self.lbl2ent[movie]] for movie in movies_list]
-        print("movies_id:", movies_id)
-        movies_emb = np.array([entity_emb[i] for i in movies_id])
-        avg = np.average(movies_emb, axis=0)
-        dist = pairwise_distances(avg.reshape(1, -1), entity_emb).reshape(-1).argsort()
-        most_likely_results_df = pd.DataFrame([
-            (id2ent[idx][len(WD):], self.ent2lbl[id2ent[idx]], dist[idx], rank+1)
-            for rank, idx in enumerate(dist[:20])
-            if self.ent2lbl[id2ent[idx]] not in movies_list and
-               "Sony Pictures Universe of Marvel Characters" not in self.ent2lbl[id2ent[idx]]],
-            columns=('Entity', 'Label', 'Score', 'Rank'))
-        # most_likely_results_df = most_likely_results_df[most_likely_results_df['Genre'].isin(genres_list)]
-        most_likely_results = most_likely_results_df.to_dict('records')
-        print("most_likely_results:", most_likely_results)
-        recommended_movies = [result['Label'] for result in most_likely_results]
-        return recommended_movies
+    # def get_recommendation(self, entities):
+    #     getAllMovies = [[str(s), str(lbl)] for s, lbl in self.graph.query('''
+    #     PREFIX ddis: <http://ddis.ch/atai/>
+    #     PREFIX wd: <http://www.wikidata.org/entity/>
+    #     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+    #     PREFIX schema: <http://schema.org/>
+    #
+    #     SELECT ?movie ?lbl WHERE {
+    #             ?movie wdt:P31 wd:Q11424 .
+    #             ?movie rdfs:label ?lbl .
+    #         }
+    #     ''')]
+    #     movie_lbls = [lbl for s, lbl in getAllMovies]
+    #     movies_list = [get_close_matches(ent.strip(), movie_lbls)[0] for ent in entities]
+    #     print("movies_list:", movies_list)
+    #     movies_id = [ent2id[self.lbl2ent[movie]] for movie in movies_list]
+    #     print("movies_id:", movies_id)
+    #     movies_emb = np.array([entity_emb[i] for i in movies_id])
+    #     avg = np.average(movies_emb, axis=0)
+    #     dist = pairwise_distances(avg.reshape(1, -1), entity_emb).reshape(-1).argsort()
+    #     most_likely_results_df = pd.DataFrame([
+    #         (id2ent[idx][len(WD):], self.ent2lbl[id2ent[idx]], dist[idx], rank+1)
+    #         for rank, idx in enumerate(dist[:20])
+    #         if self.ent2lbl[id2ent[idx]] not in movies_list and
+    #            "Sony Pictures Universe of Marvel Characters" not in self.ent2lbl[id2ent[idx]]],
+    #         columns=('Entity', 'Label', 'Score', 'Rank'))
+    #     # most_likely_results_df = most_likely_results_df[most_likely_results_df['Genre'].isin(genres_list)]
+    #     most_likely_results = most_likely_results_df.to_dict('records')
+    #     print("most_likely_results:", most_likely_results)
+    #     recommended_movies = [result['Label'] for result in most_likely_results]
+    #     return recommended_movies
 
 
 
@@ -130,12 +131,14 @@ class EmbeddingCalculator:
 if __name__ == "__main__":
     test_emb_calculator = EmbeddingCalculator()
     # entities = ['The Lion King', 'Pocahontas', ' The Beauty and the Beast']
-    entities = ['Nightmare on Elm Street', 'Friday the 13th', 'Halloween']
-    result = test_emb_calculator.get_recommendation(entities)
-    print(result)
+    # entities = ['Nightmare on Elm Street', 'Friday the 13th', 'Halloween']
+    # result = test_emb_calculator.get_recommendation(entities)
+    # print(result)
     # labels = ["Bruce Willis"]
     # # test_results = test_emb_calculator.get_most_likely_results(labels, 3)
     # test_results = test_emb_calculator.get_entity_identifier(labels[0])
     # print(test_results)
     # ent_identifier = test_results.split("/")[-1]
     # print(ent_identifier)
+    test= test_emb_calculator.ent2lbl[WD['Q457180']]
+    print(test)
