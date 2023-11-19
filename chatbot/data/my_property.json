@@ -1,12 +1,804 @@
 {
-    "P57": [ "director"],
-    "P58": [ "screenwriter"],
-    "P577": [ "publication date", "release date"],
-    "P136": [ "genre", "type", "kind", "category", "theme"],
-    "P1657": [ "MPAA film rating", "score", "stars", "rate"],
-    "P161": [ "cast member", "actor", "actress", "played"],
-    "image": ["image", "picture", "photo", "poster", "look like","portrait", "depiction", "illustration", "drawing", "sketch", "snapshot"],
-    "recommend" : ["recommend", "suggest", "advice", "advise", "propose", "suggest", "recommendation", "suggestion", "advice", "advise", "proposal", "recommend movies like"],
-    "P1431": [ "executive producer"],
-    "P2142": [ "box office"]
+    "P57": [
+        "director"
+    ],
+    "P58": [
+        "screenwriter"
+    ],
+    "P577": [
+        "publication date",
+        "release date"
+    ],
+    "P136": [
+        "genre",
+        "type",
+        "kind",
+        "category",
+        "theme"
+    ],
+    "P1657": [
+        "MPAA film rating",
+        "score",
+        "stars",
+        "rate"
+    ],
+    "P161": [
+        "cast member",
+        "actor",
+        "actress",
+        "played"
+    ],
+    "image": [
+        "image",
+        "picture",
+        "photo",
+        "poster",
+        "look like",
+        "portrait",
+        "depiction",
+        "illustration",
+        "drawing",
+        "sketch",
+        "snapshot"
+    ],
+    "recommend": [
+        "recommend",
+        "suggest",
+        "advice",
+        "advise",
+        "propose",
+        "suggest",
+        "recommendation",
+        "suggestion",
+        "advice",
+        "advise",
+        "proposal",
+        "recommend movies like"
+    ],
+    "P1431": [
+        "executive producer",
+        "producer",
+        "chief producer",
+        "managing producer",
+        "supervising producer",
+        "co-producer",
+        "associate producer",
+        "line producer",
+        "producer manager"
+    ],
+    "P2142": [
+        "box office"
+    ],
+    "P19": [
+        "place of birth",
+        "birth place",
+        "born in",
+        "birth"
+    ],
+    "P20": [
+        "place of death",
+        "death place",
+        "died in",
+        "death"
+    ],
+    "P800": [
+        "notable work"
+    ],
+    "P103": [
+        "native language"
+    ],
+    "P750": [
+        "distributor"
+    ],
+    "P106": [
+        "occupation"
+    ],
+    "P9086": [
+        "BAMID film rating"
+    ],
+    "P279": [
+        "subclass of"
+    ],
+    "P344": [
+        "director of photography"
+    ],
+    "P495": [
+        "country of origin"
+    ],
+    "P1412": [
+        "languages spoken or written"
+    ],
+    "P31": [
+        "instance of"
+    ],
+    "P27": [
+        "country of citizenship"
+    ],
+    "P1411": [
+        "nominated for"
+    ],
+    "P840": [
+        "narrative location"
+    ],
+    "P3373": [
+        "sibling"
+    ],
+    "P26": [
+        "spouse"
+    ],
+    "P1441": [
+        "present in work"
+    ],
+    "P170": [
+        "creator"
+    ],
+    "P166": [
+        "award received"
+    ],
+    "P915": [
+        "filming location"
+    ],
+    "P530": [
+        "diplomatic relation"
+    ],
+    "P3342": [
+        "significant person"
+    ],
+    "P272": [
+        "production company"
+    ],
+    "P17": [
+        "country"
+    ],
+    "P1040": [
+        "film editor"
+    ],
+    "P1889": [
+        "different from"
+    ],
+    "P2408": [
+        "set in period"
+    ],
+    "P1981": [
+        "FSK film rating"
+    ],
+    "P437": [
+        "distribution"
+    ],
+    "P2554": [
+        "production designer"
+    ],
+    "P364": [
+        "original language of work"
+    ],
+    "P1343": [
+        "described by source"
+    ],
+    "P144": [
+        "based on"
+    ],
+    "P921": [
+        "main subject"
+    ],
+    "P241": [
+        "military branch"
+    ],
+    "P155": [
+        "follows"
+    ],
+    "P3092": [
+        "film crew member"
+    ],
+    "P8345": [
+        "media franchise"
+    ],
+    "P140": [
+        "religion"
+    ],
+    "P725": [
+        "voice actor"
+    ],
+    "P462": [
+        "color"
+    ],
+    "P3650": [
+        "JMK film rating"
+    ],
+    "P69": [
+        "educated at"
+    ],
+    "P3402": [
+        "CNC film rating (Romania)"
+    ],
+    "P50": [
+        "author"
+    ],
+    "Of": [
+        null
+    ],
+    "P190": [
+        "sister city"
+    ],
+    "P1346": [
+        "winner"
+    ],
+    "P937": [
+        "work location"
+    ],
+    "P407": [
+        "language of work or name"
+    ],
+    "P47": [
+        "shares border with"
+    ],
+    "P97": [
+        "noble title"
+    ],
+    "P6886": [
+        "writing language"
+    ],
+    "P463": [
+        "member of"
+    ],
+    "P156": [
+        "followed by"
+    ],
+    "P175": [
+        "performer"
+    ],
+    "P2747": [
+        "Filmiroda rating"
+    ],
+    "P2515": [
+        "costume designer"
+    ],
+    "P5201": [
+        "IMDA rating "
+    ],
+    "P527": [
+        "has part"
+    ],
+    "P451": [
+        "partner"
+    ],
+    "P1552": [
+        "has quality"
+    ],
+    "P802": [
+        "student"
+    ],
+    "P2363": [
+        "NMHH film rating"
+    ],
+    "P1429": [
+        "pet"
+    ],
+    "P2061": [
+        "aspect ratio"
+    ],
+    "P5021": [
+        "assessment"
+    ],
+    "P30": [
+        "continent"
+    ],
+    "P669": [
+        "located on street"
+    ],
+    "P108": [
+        "employer"
+    ],
+    "P5970": [
+        "Medier\u00e5det rating"
+    ],
+    "P2758": [
+        "CNC film rating"
+    ],
+    "P793": [
+        "significant event"
+    ],
+    "P1080": [
+        "from fictional universe"
+    ],
+    "P551": [
+        "residence"
+    ],
+    "P641": [
+        "sport"
+    ],
+    "P674": [
+        "characters"
+    ],
+    "P40": [
+        "child"
+    ],
+    "P206": [
+        "located next to body of water"
+    ],
+    "P150": [
+        "contains administrative territorial entities"
+    ],
+    "P135": [
+        "movement"
+    ],
+    "P1050": [
+        "medical condition"
+    ],
+    "P509": [
+        "cause of death"
+    ],
+    "P1532": [
+        "country for sport"
+    ],
+    "P2563": [
+        "superhuman feature or ability"
+    ],
+    "P179": [
+        "series"
+    ],
+    "P1165": [
+        "home world"
+    ],
+    "P172": [
+        "ethnic group"
+    ],
+    "P2756": [
+        "EIRIN film rating"
+    ],
+    "P1433": [
+        "published in"
+    ],
+    "P1344": [
+        "participant of"
+    ],
+    "P3834": [
+        "RTC film rating"
+    ],
+    "P2936": [
+        "language used"
+    ],
+    "P22": [
+        "father"
+    ],
+    "P767": [
+        "contributor"
+    ],
+    "P2637": [
+        "RARS rating"
+    ],
+    "P159": [
+        "headquarters location"
+    ],
+    "P5150": [
+        "IGAC rating"
+    ],
+    "P37": [
+        "official language"
+    ],
+    "P361": [
+        "part of"
+    ],
+    "P4969": [
+        "derivative work"
+    ],
+    "P2629": [
+        "BBFC rating"
+    ],
+    "P2684": [
+        "Kijkwijzer rating"
+    ],
+    "P1434": [
+        "describes the fictional universe"
+    ],
+    "P1416": [
+        "affiliation"
+    ],
+    "P2650": [
+        "interested in"
+    ],
+    "P3216": [
+        "ClassInd rating"
+    ],
+    "P1376": [
+        "capital of"
+    ],
+    "P1877": [
+        "after a work by"
+    ],
+    "P6942": [
+        "animator"
+    ],
+    "P66": [
+        "ancestral home"
+    ],
+    "P1038": [
+        "relative"
+    ],
+    "P275": [
+        "license"
+    ],
+    "P3306": [
+        "ICAA rating"
+    ],
+    "P276": [
+        "location"
+    ],
+    "P131": [
+        "located in the administrative territorial entity"
+    ],
+    "P735": [
+        "given name"
+    ],
+    "P2283": [
+        "uses"
+    ],
+    "P119": [
+        "place of burial"
+    ],
+    "P4437": [
+        "FPB rating"
+    ],
+    "P1269": [
+        "facet of"
+    ],
+    "P138": [
+        "named after"
+    ],
+    "P3428": [
+        "INCAA film rating"
+    ],
+    "P1056": [
+        "product"
+    ],
+    "P452": [
+        "industry"
+    ],
+    "P195": [
+        "collection"
+    ],
+    "P5096": [
+        "member of the crew of"
+    ],
+    "P3300": [
+        "musical conductor"
+    ],
+    "P25": [
+        "mother"
+    ],
+    "P1366": [
+        "replaced by"
+    ],
+    "P9215": [
+        "set during recurring event"
+    ],
+    "P449": [
+        "original network"
+    ],
+    "P6379": [
+        "has works in the collection"
+    ],
+    "P101": [
+        "field of work"
+    ],
+    "P1445": [
+        "fictional universe described in"
+    ],
+    "P8874": [
+        "Hong Kong film rating"
+    ],
+    "P1196": [
+        "manner of death"
+    ],
+    "P607": [
+        "conflict"
+    ],
+    "P8889": [
+        "MTRCB rating"
+    ],
+    "P178": [
+        "developer"
+    ],
+    "P740": [
+        "location of formation"
+    ],
+    "P6216": [
+        "copyright status"
+    ],
+    "P3448": [
+        "stepparent"
+    ],
+    "P91": [
+        "sexual orientation"
+    ],
+    "P112": [
+        "founder"
+    ],
+    "P157": [
+        "killed by"
+    ],
+    "P7959": [
+        "historic county"
+    ],
+    "P941": [
+        "inspired by"
+    ],
+    "P4584": [
+        "first appearance"
+    ],
+    "P2079": [
+        "fabrication method"
+    ],
+    "P5028": [
+        "sound designer"
+    ],
+    "P127": [
+        "owned by"
+    ],
+    "P1830": [
+        "owner of"
+    ],
+    "P400": [
+        "platform"
+    ],
+    "P3275": [
+        "storyboard artist"
+    ],
+    "P737": [
+        "influenced by"
+    ],
+    "P7573": [
+        "IFCO rating"
+    ],
+    "P1142": [
+        "political ideology"
+    ],
+    "P1365": [
+        "replaces"
+    ],
+    "P7047": [
+        "enemy"
+    ],
+    "P5389": [
+        "permanent resident of"
+    ],
+    "P1037": [
+        "manager/director"
+    ],
+    "P1066": [
+        "student of"
+    ],
+    "P6658": [
+        "RCQ classification"
+    ],
+    "P291": [
+        "place of publication"
+    ],
+    "P945": [
+        "allegiance"
+    ],
+    "P1299": [
+        "depicted by"
+    ],
+    "P123": [
+        "publisher"
+    ],
+    "P180": [
+        "depicts"
+    ],
+    "P1382": [
+        "coincident with"
+    ],
+    "P7937": [
+        "form of creative work"
+    ],
+    "P3174": [
+        "art director"
+    ],
+    "P3818": [
+        "KMRB film rating"
+    ],
+    "P710": [
+        "participant"
+    ],
+    "P371": [
+        "presenter"
+    ],
+    "P931": [
+        "place served by airport"
+    ],
+    "P2348": [
+        "period"
+    ],
+    "P6166": [
+        "quotes work"
+    ],
+    "P8411": [
+        "set in environment"
+    ],
+    "P460": [
+        "said to be the same as"
+    ],
+    "P3803": [
+        "original film format"
+    ],
+    "P1029": [
+        "crew member"
+    ],
+    "P36": [
+        "capital"
+    ],
+    "P306": [
+        "operating system"
+    ],
+    "P205": [
+        "basin country"
+    ],
+    "P1809": [
+        "choreographer"
+    ],
+    "P706": [
+        "located on terrain feature"
+    ],
+    "P366": [
+        "use"
+    ],
+    "P1327": [
+        "professional or sports partner"
+    ],
+    "P6962": [
+        "narrative motif"
+    ],
+    "P8371": [
+        "references work, tradition or theory"
+    ],
+    "P8670": [
+        "character designer"
+    ],
+    "P747": [
+        "edition(s)"
+    ],
+    "P832": [
+        "public holiday"
+    ],
+    "P749": [
+        "parent organization"
+    ],
+    "P1399": [
+        "convicted of"
+    ],
+    "P2341": [
+        "indigenous to"
+    ],
+    "P3156": [
+        "Australian Classification"
+    ],
+    "P461": [
+        "opposite of"
+    ],
+    "P6": [
+        "head of government"
+    ],
+    "P4805": [
+        "make-up artist"
+    ],
+    "P1027": [
+        "conferred by"
+    ],
+    "P629": [
+        "edition or translation of"
+    ],
+    "P3842": [
+        "located in the present-day administrative territorial entity"
+    ],
+    "P2360": [
+        "intended public"
+    ],
+    "P479": [
+        "input device"
+    ],
+    "P54": [
+        "member of sports team"
+    ],
+    "P2860": [
+        "cites work"
+    ],
+    "P1589": [
+        "deepest point"
+    ],
+    "P287": [
+        "designer"
+    ],
+    "P485": [
+        "archives at"
+    ],
+    "P425": [
+        "field of this occupation"
+    ],
+    "P5072": [
+        "presented in"
+    ],
+    "P4908": [
+        "season"
+    ],
+    "P3301": [
+        "broadcast by"
+    ],
+    "P1001": [
+        "applies to jurisdiction"
+    ],
+    "P2438": [
+        "narrator"
+    ],
+    "P5940": [
+        "plot expanded in"
+    ],
+    "P137": [
+        "operator"
+    ],
+    "P828": [
+        "has cause"
+    ],
+    "P2546": [
+        "sidekick of"
+    ],
+    "P21": [
+        "sex or gender"
+    ],
+    "P825": [
+        "dedicated to"
+    ],
+    "P35": [
+        "head of state"
+    ],
+    "P1455": [
+        "list of works"
+    ],
+    "P2541": [
+        "operating area"
+    ],
+    "P1576": [
+        "lifestyle"
+    ],
+    "P5152": [
+        "KAVI rating"
+    ],
+    "P2416": [
+        "sports discipline competed in"
+    ],
+    "P2632": [
+        "place of detention"
+    ],
+    "P263": [
+        "official residence"
+    ],
+    "P6275": [
+        "copyright representative"
+    ],
+    "P3095": [
+        "practiced by"
+    ],
+    "P1542": [
+        "cause of"
+    ],
+    "P1995": [
+        "medical specialty"
+    ],
+    "P4608": [
+        "scenographer"
+    ],
+    "P1875": [
+        "represented by"
+    ],
+    "P3931": [
+        "copyright holder"
+    ],
+    "P466": [
+        "occupant"
+    ],
+    "P7327": [
+        "OFLC classification"
+    ],
+    "P7936": [
+        "business model"
+    ]
 }
