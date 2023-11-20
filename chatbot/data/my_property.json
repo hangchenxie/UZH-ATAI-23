@@ -1,6 +1,11 @@
 {
     "P57": [
-        "director"
+        "director",
+        "directed by",
+        "directors",
+        "directed",
+        "director of",
+        "the director"
     ],
     "P58": [
         "screenwriter"
@@ -20,7 +25,8 @@
         "MPAA film rating",
         "score",
         "stars",
-        "rate"
+        "rate",
+        "the MPAA film rating"
     ],
     "P161": [
         "cast member",
@@ -212,9 +218,6 @@
     ],
     "P50": [
         "author"
-    ],
-    "Of": [
-        null
     ],
     "P190": [
         "sister city"

@@ -16,7 +16,7 @@ entity_emb = np.load(embeds_path.joinpath('entity_embeds.npy'))
 relation_emb = np.load(embeds_path.joinpath('relation_embeds.npy'))
 entity_file = embeds_path.joinpath('entity_ids.del')
 relation_file = embeds_path.joinpath('relation_ids.del')
-lbl2rel_file = embeds_path.joinpath('rel2lbl.json')
+lbl2rel_file = embeds_path.joinpath('property.json')
 
 with open(entity_file, 'r') as ifile:
     ent2id = {rdflib.term.URIRef(ent): int(idx) for idx, ent in csv.reader(ifile, delimiter='\t')}

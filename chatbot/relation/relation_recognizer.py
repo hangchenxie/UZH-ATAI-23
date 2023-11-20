@@ -53,8 +53,9 @@ if __name__ == '__main__':
         # 'Show me a picture of Halle Berry.',
         # 'What does Julia Roberts look like?',
         # 'Let me know what Sandra Bullock looks like.'
-        "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
-        "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
+        # "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
+        # "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
+        'MPAA film rating'
     ]
     for question in questions:
         print(question)

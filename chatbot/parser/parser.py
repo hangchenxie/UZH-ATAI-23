@@ -29,7 +29,7 @@ if __name__ == "__main__":
         # "Who is the director of Good Will Huntin? ",
         # 'Who directed The Bridge on the River Kwai?',
         # "Who is the screenwriter of The Masked Gang: Cyprus?",
-        # "What is the MPAA film rating of Weathering with You?",
+        "What is the MPAA film rating of Weathering with You?",
         # "What is the genre of Good Neighbors?",
         # "What is the box office of The Princess and the Frog? ",
         # 'Can you tell me the publication date of Tom Meets Zizou? ',
@@ -37,8 +37,8 @@ if __name__ == "__main__":
         # 'Show me a picture of Halle Berry.',
         # 'What does Julia Roberts look like?',
         # 'Let me know what Sandra Bullock looks like.'
-        "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
-        "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
+        # "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
+        # "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
     ]
     for question in questions:
         answer = ms.parse_entity_relation(question)

@@ -12,35 +12,46 @@ from pandas import DataFrame
 from chatbot import cache
 
 KG = KnowledgeGraph().graph
-path = Path(__file__).parents[1].joinpath("data", "rel2lbl.json")
+path = Path(__file__).parents[1].joinpath("data", "property.json")
 
 label_flags = {
-    "MPAA film rating": {"use_embedding": True, "use_sparql": False, "use_image": False, "use_recommendation": False},
-    "publication date": {"use_embedding": False, "use_sparql": True, "use_image": False, "use_recommendation": False},
-    "IMDb ID": {"use_embedding": False, "use_sparql": True, "use_image": False, "use_recommendation": False},
-    "image": {"use_embedding": False, "use_sparql": False, "use_image": True, "use_recommendation": False},
-    "recommend": {"use_embedding": False, "use_sparql": False, "use_image": False, "use_recommendation": True},
+    "MPAA film rating": {"use_embedding": True, "use_sparql": False, "use_image": False, "use_recommendation": False, "use_crowdsource": False},
+    "publication date": {"use_embedding": False, "use_sparql": True, "use_image": False, "use_recommendation": False, "use_crowdsource": False},
+    "IMDb ID": {"use_embedding": False, "use_sparql": True, "use_image": False, "use_recommendation": False, "use_crowdsource": False},
+    "image": {"use_embedding": False, "use_sparql": False, "use_image": True, "use_recommendation": False, "use_crowdsource": False},
+    "recommend": {"use_embedding": False, "use_sparql": False, "use_image": False, "use_recommendation": True, "use_crowdsource": False},
     "executive producer": {"use_embedding": False, "use_sparql": False, "use_image": False, "use_recommendation": False, "use_crowdsource": True},
     "box office": {"use_embedding": False, "use_sparql": False, "use_image": False, "use_recommendation": False, "use_crowdsource": True},
 }
 
 sparql_response_templates = [
-    "The answer from sparql: {}",
-    "According to sparql, the answer is: {}",
-    "Sparql suggests that the answer could be: {}",
+    "The answer from sparql: The {} of {} is {}",
+    "According to sparql, the answer is: The {} of {} is {}",
+    "Sparql suggests that the answer could be: The {} of {} is {}",
 ]
 
 embedding_response_templates = [
-    "The answer from embeddings: {}",
-    "According to embeddings, the answer is: {}",
+    "The answer from embeddings: I would guess the answer is {} ",
+    "According to embeddings: I would say {} might also be a correct answer.",
     "Embeddings suggest that the answer could be: {}",
 ]
 
 recommendation_response_templates = [
-    "The answer from recommendation: {}",
-    "According to recommendation, the answer is: {}",
-    "Recommendation suggests that the answer could be: {}",
+    "Similar movies are : {}",
+    "You will probably like : {}",
+    "I would recommend you to watch: {}",
 ]
+
+crowdsource_response_templates = [
+    "According to crowdsource, the answer is: {}, the support votes are: {}, the reject votes are: {}, the inter-rater agreement is: {} ",
+    "The answer from crowdsource: {}, the support votes are: {}, the reject votes are: {}, the inter-rater agreement is: {} ",
+    "Crowdsource suggests that the answer could be: {}, the support votes are: {}, the reject votes are: {}, the inter-rater agreement is: {} "
+]
+
+
+
+
+
 
 class Responsor:
 
@@ -63,14 +74,6 @@ class Responsor:
         m = message_text
         if m.startswith("PREFIX"):
             return "SPARQL"
-        elif m.startswith("Wh"):
-            return "Wh- question"
-        elif m.startswith("How"):
-            return "How- question"
-        elif "highest" in m:
-            return "rank question"
-        elif "recommend" in m:
-            return "recommendation"
         else:
             return "other"
 
@@ -80,8 +83,8 @@ class Responsor:
         print(type(rel_id))
         ent_lbl = ''.join(ent_lbl)
         rel_lbl = ''.join(rel_lbl)
-        rel_lbl = self.change_lbl_type(rel_lbl)
-        if rel_lbl == "releaseDate":
+        # rel_lbl = self.change_lbl_type(rel_lbl)
+        if rel_lbl == "publication date":
             q = '''
                 PREFIX ddis: <http://ddis.ch/atai/>
                 PREFIX wd: <http://www.wikidata.org/entity/>
@@ -110,7 +113,7 @@ class Responsor:
         try:
             q_result = self.graph.query(q)
         except Exception as exception:
-            print(f"Error: {type(exception).__name__}")
+            print(f"Factual Error: {type(exception).__name__}")
             return None
         if q_result is None:
             return None
@@ -128,148 +131,142 @@ class Responsor:
                 result = None
         return result
 
-    def change_lbl_type(self, lbl):
-        if lbl == "MPAA film rating":
-            return "rating"
-        elif lbl == "publication date":
-            return "releaseDate"
-        elif lbl == "box office":
-            return "boxOffice"
-        else:
-            return lbl
+    # def change_lbl_type(self, lbl):
+    #     if lbl == "MPAA film rating":
+    #         return "rating"
+    #     elif lbl == "publication date":
+    #         return "releaseDate"
+    #     else:
+    #         return lbl
 
     def convert_type(term):
         return int(term) if term.datatype == 'http://www.w3.org/2001/XMLSchema#integer' else str(term)
 
 
     def response(self, message_text):
-
-
         c = self.classify(message_text)
+        response_text = ""
+        try:
+            entity_dict, relation_dict = self.parser.parse_entity_relation(message_text)
+        except Exception as exception:
+            print(f"Identify Error: {type(exception).__name__}")
+            return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+
+        ent_lbl = [entity_dict[k]["matched_lbl"] for k in entity_dict.keys()]
+        rel_lbl = [v["relation"] for v in relation_dict.values()]
 
         if c == "SPARQL":
             try:
                 answer = [[self.convert_type(t) for t in s] for s in self.graph.query(message_text)]
-                resonse_text = f"{answer}"
+                response_text = f"{answer}"
             except Exception as exception:
-                resonse_text = f"Error: {type(exception).__name__}"
-        elif c in ["Wh- question", "How- question", "rank question", "recommendation", "other"]:
-            use_sparql = True
-            use_embedding = False
-            use_image = False
-            use_recommendation = False
-            use_crowdsource = False
-            try:
-                entity_dict, relation_dict = self.parser.parse_entity_relation(message_text)
-            except Exception as exception:
-                print(f"Error: {type(exception).__name__}")
-                return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
-            print(f"entity_dict: {entity_dict}")
-            print(f"relation_dict: {relation_dict}")
-            ent_lbl = [entity_dict[k]["matched_lbl"] for k in entity_dict.keys()]
-            rel_lbl = [v["relation"] for v in relation_dict.values()]
-            print(f"ent_lbl: {ent_lbl}")
-            print(f"rel_lbl: {rel_lbl}")
+                response_text = f"Sparql Error: {type(exception).__name__}"
+        else:
+
             for lbl in rel_lbl:
                 if lbl in label_flags:
                     use_embedding = label_flags[lbl]["use_embedding"]
                     use_sparql = label_flags[lbl]["use_sparql"]
+                    use_crowdsource = label_flags[lbl]["use_crowdsource"]
                     use_image = label_flags[lbl]["use_image"]
                     use_recommendation = label_flags[lbl]["use_recommendation"]
-                    use_crowdsource = label_flags[lbl]["use_crowdsource"]
+                else:
+                    use_sparql = True
+                    use_embedding = False
+                    use_crowdsource = False
+                    use_image = False
+                    use_recommendation = False
+
+
 
             if use_sparql:
                 sparql_result = self.sparql_querier(ent_lbl, rel_lbl)
                 if bool(sparql_result):
                     answer = sparql_result
                     template = random.choice(sparql_response_templates)
-                    return template.format(answer)
+                    response_text = template.format(''.join(rel_lbl), ''.join(ent_lbl), answer)
                 else:
+                    print("use sparql fails, use crowdsource")
                     use_crowdsource = True
-
             if use_crowdsource:
                 ent_identifier = self.emb_calculator.get_entity_identifier(ent_lbl[0])
                 rel_identifier = self.emb_calculator.get_relation_identifier(rel_lbl[0])
-                print(f"ent_identifier: {ent_identifier}")
-                print(f"rel_identifier: {rel_identifier}")
                 s = "wd:" + str(ent_identifier.split("/")[-1])
                 p = "wdt:" + str(rel_identifier)
-                print (f"s: {s}")
-                print (f"p: {p}")
                 if bool(self.crowdsource.search_crowdsource(s, p)):
                     o,support_votes, reject_votes, kappa = self.crowdsource.search_crowdsource(s, p)
                     if o.startswith("wd:"):
                         o = o.replace("wd:", "")
                         o = self.emb_calculator.ent2lbl[self.emb_calculator.WD[o]]
-                    response_text= f"According to crowdsource, the answer is: {o}, the support votes are: {support_votes}, the reject votes are: {reject_votes}, the inter-rater agreement is: {kappa} "
+                    template = random.choice(crowdsource_response_templates)
+                    response_text = template.format(o, support_votes, reject_votes, kappa)
                 else:
+                    print("use crowdsource fails, use embedding")
                     use_embedding = True
-
             if use_embedding:
                 labels = ent_lbl + rel_lbl
                 try:
                     emb_results = self.emb_calculator.get_most_likely_results(labels, 10)
                 except Exception as exception:
                     print(f"Error: {type(exception).__name__}")
-                    return f"Someting went wrong with the embeddings. Please try again."
+                    return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
                 top_labels = [result['Label'] for result in emb_results[:3]]
                 template = random.choice(embedding_response_templates)
                 response_text = template.format(', '.join(top_labels))
 
+
             if use_image:
                 ent_identifier = self.emb_calculator.get_entity_identifier(ent_lbl[0])
-                image_url, image_type = self.image_process.get_image(ent_identifier.split("/")[-1])
-                print(f"image_url: {image_url}")
-                print(f"image_type: {image_type}")
+                try:
+                    image_url, image_type = self.image_process.get_image(ent_identifier.split("/")[-1])
+                except Exception as exception:
+                    print(f"Image Error: {type(exception).__name__}")
+                    return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
                 response_text = 'image:' + image_url.replace(".jpg", "")
-                print(f"response_text: {response_text}")
 
             if use_recommendation:
                 entities = ', '.join(entity for entity in entity_dict.keys())
                 entities = entities.replace(", and", ", ")
                 entities = [entity for entity in entities.split(", ")]
-                print(f"entities: {entities}")
-                recommendation = self.recommend.get_recommendation(entities)[:10]
-                recommendation = random.sample(recommendation, 3)
-                print(f"recommendation: {recommendation}")
-                template = random.choice(recommendation_response_templates)
+                try:
+                    recommendation = self.recommend.get_recommendation(entities)[:10]
+                    recommendation = random.sample(recommendation, 3)
+                    template = random.choice(recommendation_response_templates)
+                except Exception as exception:
+                    print(f"Recommendation Error: {type(exception).__name__}")
+                    return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
                 response_text = template.format(', '.join(recommendation))
 
-
-            else:
-                response_text = f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
-
-
         return response_text
+
 
 if __name__ == "__main__":
     responsor = Responsor()
     questions = [
-        # "Who is the screenwriter of The Masked Gang: Cyprus?",
-        # "What is the MPAA film rating of Weathering with You?",
-        #
-        # 'When was "The Gofather" released?',
-        # 'Can you tell me the publication date of Tom Meets Zizou? ',#the answer is 2010-10-01 which is different from the answer from crowdsource which is 2011-01-01
-        #
-        # "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
-        # "Who is the director of Good Will Huntin? ",
-        # 'Who directed The Bridge on the River Kwai?',
-        #
-        # "What is the genre of Good Neighbors?",
+        "Who is the screenwriter of The Masked Gang: Cyprus?",
+        "What is the MPAA film rating of Weathering with You?",
+        "What is the country of citizenship of Olivier Schatzky?",
+
+        'When was "The Gofather" released?',
+        'Can you tell me the publication date of Tom Meets Zizou? ',#the answer is 2010-10-01 which is different from the answer from crowdsource which is 2011-01-01
+
+        "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
+        "Who is the director of Good Will Huntin? ",
+        'Who directed The Bridge on the River Kwai?',
+
+        "What is the genre of Good Neighbors?",
 
         "What is the box office of The Princess and the Frog? ",
         "Who is the executive producer of X-Men: First Class? ",
         "What is the birthplace of Christopher Nolan? ",
 
-        # "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
-        # "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
+        "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
+        "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
 
-        # 'what is the genre of "The Lion King"? ',
-        # 'what is the genre of "Pocahontas"? ',
-        # 'what is the genre of "The Beauty and the Beast"? ',
-        # 'what is the genre of "Nightmare on Elm Street"? ',
-        # 'what is the genre of "Friday the 13th"? ',
-        # 'what is the genre of "Halloween"? ',
+        'Show me a picture of Halle Berry. ',
+        'Show me a picture of Tom Cruise. ',
+        'What does Julia Roberts look like? ',
+        'Let me know what Sandra Bullock looks like. '
 
     ]
     for question in questions:
