@@ -44,7 +44,7 @@ class ImageProcess:
         type_preferences = ['poster']
         for entry in self.images:
             if self.id[0] in entry['cast'] and len(entry['cast'])==1:
-                if best_image_info is None or entry['type'] in type_preferences and entry['type'] != 'still_frame':
+                if best_image_info is None or entry['type'] in type_preferences:
                     best_image_info = entry['img']
                     best_type = entry['type']
         return best_image_info, best_type

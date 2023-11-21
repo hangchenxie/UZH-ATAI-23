@@ -25,15 +25,15 @@ label_flags = {
 }
 
 sparql_response_templates = [
-    "The answer from sparql: The {} of {} is {}",
-    "According to sparql, the answer is: The {} of {} is {}",
-    "Sparql suggests that the answer could be: The {} of {} is {}",
+    "I think the {} of {} is {}. (The answer from sparql)",
+    "I guess the {} of {} is {}. (According to sparql)",
+    "I think the answer to the {} of {} is {}. (Sparql suggests that the answer)",
 ]
 
 embedding_response_templates = [
-    "The answer from embeddings: I would guess the answer is {} ",
-    "According to embeddings: I would say {} might also be a correct answer.",
-    "Embeddings suggest that the answer could be: {}",
+    "I would guess the answer could be one of them in {} . (The answer from embeddings)",
+    "I would say one of {} might be a correct answer. (According to embeddings)",
+    "I suggest that the answer could be: {}. (Embeddings)",
 ]
 
 recommendation_response_templates = [
