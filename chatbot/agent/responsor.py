@@ -155,6 +155,9 @@ class Responsor:
         ent_lbl = [entity_dict[k]["matched_lbl"] for k in entity_dict.keys()]
         rel_lbl = [v["relation"] for v in relation_dict.values()]
 
+        print(f"ent_lbl: {ent_lbl}")
+        print(f"rel_lbl: {rel_lbl}")
+
         if c == "SPARQL":
             try:
                 answer = [[self.convert_type(t) for t in s] for s in self.graph.query(message_text)]

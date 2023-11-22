@@ -1,13 +1,14 @@
 import json
 import pandas as pd
-import sparknlp
-import pyspark.sql.functions as F
-from pyspark.ml import Pipeline
-from pyspark.sql import SparkSession
-from sparknlp.annotator import *
-from sparknlp.base import *
-from sparknlp.pretrained import PretrainedPipeline
-from pyspark.sql.types import StringType, IntegerType
+# import sparknlp
+# import pyspark.sql.functions as F
+# from pyspark.ml import Pipeline
+# from pyspark.sql import SparkSession
+# from sparknlp.annotator import *
+# from sparknlp.base import *
+# from sparknlp.pretrained import PretrainedPipeline
+# from pyspark.sql.types import StringType, IntegerType
+from chatbot.sparknlp_pipeline.sparknlp_pipeline import spark, entity_pipeline
 from chatbot import cache
 from pathlib import Path
 import re
@@ -20,45 +21,45 @@ ent_lbl_path = Path(__file__).parents[1].joinpath("data", "ent_lbl.json")
 with open(ent_lbl_path, 'rb') as file:
     ent_lbl = json.load(file)
 
-spark = sparknlp.start()
+# spark = sparknlp.start()
 
-# @cache.memoize(timeout=0)
-def create_pipeline():
+# # @cache.memoize(timeout=0)
+# def create_pipeline():
 
-    document_assembler = DocumentAssembler() \
-    .setInputCol('text') \
-    .setOutputCol('document')
+#     document_assembler = DocumentAssembler() \
+#     .setInputCol('text') \
+#     .setOutputCol('document')
 
-    tokenizer = Tokenizer() \
-    .setInputCols(['document']) \
-    .setOutputCol('token')
+#     tokenizer = Tokenizer() \
+#     .setInputCols(['document']) \
+#     .setOutputCol('token')
 
-    embeddings = DistilBertEmbeddings\
-    .pretrained('distilbert_base_cased', 'en')\
-    .setInputCols(["token", "document"])\
-    .setOutputCol("embeddings")
+#     embeddings = DistilBertEmbeddings\
+#     .pretrained('distilbert_base_cased', 'en')\
+#     .setInputCols(["token", "document"])\
+#     .setOutputCol("embeddings")
 
-    ner_model = NerDLModel.pretrained('ner_mit_movie_simple_distilbert_base_cased', 'en') \
-    .setInputCols(['document', 'token', 'embeddings']) \
-    .setOutputCol('ner')
+#     ner_model = NerDLModel.pretrained('ner_mit_movie_simple_distilbert_base_cased', 'en') \
+#     .setInputCols(['document', 'token', 'embeddings']) \
+#     .setOutputCol('ner')
 
-    ner_converter = NerConverter() \
-    .setInputCols(['document', 'token', 'ner']) \
-    .setOutputCol('entities')
+#     ner_converter = NerConverter() \
+#     .setInputCols(['document', 'token', 'ner']) \
+#     .setOutputCol('entities')
 
-    pipeline = Pipeline(stages=[
-        document_assembler, 
-        tokenizer,
-        embeddings,
-        ner_model,
-        ner_converter
-    ])
-    return pipeline
+#     pipeline = Pipeline(stages=[
+#         document_assembler, 
+#         tokenizer,
+#         embeddings,
+#         ner_model,
+#         ner_converter
+#     ])
+#     return pipeline
 
 class EntityRecognizer:
 
     def __init__(self):
-        self.pipeline = create_pipeline()
+        self.pipeline = entity_pipeline
 
 
     def match_entity_label(self, entity, ent_lbl):
