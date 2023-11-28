@@ -78,13 +78,14 @@
     ],
     "P19": [
         "place of birth",
+        "the birthplace",
         "birth place",
         "born in",
         "birth"
     ],
     "P20": [
         "place of death",
-        "death place",
+        "deathplace",
         "died in",
         "death"
     ],
