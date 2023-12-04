@@ -230,6 +230,7 @@ class Responsor:
             if use_recommendation:
                 entities = ', '.join(entity for entity in entity_dict.keys())
                 entities = entities.replace(", and", ", ")
+                entities = entities.replace("and", ", ")
                 entities = [entity for entity in entities.split(", ")]
                 try:
                     recommendation = self.recommend.get_recommendation(entities)[:10]

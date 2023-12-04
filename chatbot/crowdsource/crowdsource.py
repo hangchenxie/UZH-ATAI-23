@@ -15,7 +15,13 @@ else:
 
     filtered_data = raw_data[(raw_data['WorkTimeInSeconds'] > 30) & (raw_data['LifetimeApprovalRate'] > '40%')]
 
-    kappas = filtered_data.groupby('HITTypeId').apply(lambda x: fleiss_kappa(aggregate_raters(pd.crosstab(x['WorkerId'], x['AnswerLabel']))[0]))
+    # kappas = filtered_data.groupby('HITTypeId').apply(lambda x: fleiss_kappa(aggregate_raters(pd.crosstab(x['WorkerId'], x['AnswerLabel']))[0]))
+    kappas = filtered_data.groupby('HITTypeId').apply(
+        lambda x: fleiss_kappa(pd.crosstab(x['HITId'], x['AnswerLabel']))
+    )
+    filtered_data = filtered_data.assign(
+        kappa = filtered_data['HITTypeId'].apply(lambda x: kappas[x])
+    )
 
     data = []
     for hitId, group in filtered_data.groupby('HITId'):
@@ -25,7 +31,8 @@ else:
         votes = group['AnswerLabel'].value_counts()
         support_votes = votes.get('CORRECT', 0)
         reject_votes = votes.get('INCORRECT', 0)
-        kappa = kappas.get(hitId, None)
+        # kappa = kappas.get(hitId, None)
+        kappa = group['kappa'].iloc[0]
         data.append([hitId, s, p, o, support_votes, reject_votes, kappa])
 
     result_df = pd.DataFrame(data, columns=['HITId', 'Subject', 'Predicate', 'Object', 'SupportVotes', 'RejectVotes', 'Kappa'])
@@ -55,4 +62,4 @@ class CrowdSource:
 
 if __name__ == '__main__':
     crowd = CrowdSource()
-    print(crowd.search_crowdsource('wd:Q11621', 'wdt:P19'))
+    print(crowd.search_crowdsource('wd:Q11621', 'wdt:P2142'))
