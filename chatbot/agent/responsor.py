@@ -148,6 +148,8 @@ class Responsor:
         response_text = ""
         try:
             entity_dict, relation_dict = self.parser.parse_entity_relation(message_text)
+            print(f"entity_dict: {entity_dict}")
+            print(f"relation_dict: {relation_dict}")
         except Exception as exception:
             print(f"Identify Error: {type(exception).__name__}")
             return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
@@ -189,29 +191,52 @@ class Responsor:
                     template = random.choice(sparql_response_templates)
                     response_text = template.format(''.join(rel_lbl), ''.join(ent_lbl), answer)
                 else:
-                    print("use sparql fails, use crowdsource")
-                    use_crowdsource = True
-            if use_crowdsource:
+                    response_text = "No answer from knowledge graph. Let me check other sources... "    
+                # check crowdsource, if crowd fix exists, add it to the response
                 ent_identifier = self.emb_calculator.get_entity_identifier(ent_lbl[0])
                 rel_identifier = self.emb_calculator.get_relation_identifier(rel_lbl[0])
                 s = "wd:" + str(ent_identifier.split("/")[-1])
                 p = "wdt:" + str(rel_identifier)
                 if bool(self.crowdsource.search_crowdsource(s, p)):
-                    o,support_votes, reject_votes, kappa = self.crowdsource.search_crowdsource(s, p)
-                    if o.startswith("wd:"):
-                        o = o.replace("wd:", "")
-                        o = self.emb_calculator.ent2lbl[self.emb_calculator.WD[o]]
-                    template = random.choice(crowdsource_response_templates)
-                    response_text = template.format(o, support_votes, reject_votes, kappa)
+                    crowd_fix = self.crowdsource.search_crowdsource(s, p)
+                    if crowd_fix["fix_position"] == "Object":
+                        o = crowd_fix["fix_value"]
+                        if o.startswith("wd:"):
+                            o = o.replace("wd:", "")
+                            o = self.emb_calculator.ent2lbl[self.emb_calculator.WD[o]]
+                        support_votes = crowd_fix["support_votes"]
+                        reject_votes = crowd_fix["reject_votes"]
+                        kappa = crowd_fix["kappa"]
+                        template = random.choice(crowdsource_response_templates)
+                        response_text += "\n"
+                        response_text += template.format(o, support_votes, reject_votes, kappa)
                 else:
-                    print("use crowdsource fails, use embedding")
+                    # print("use sparql fails, use crowdsource")
+                    if not bool(sparql_result):
+                        print("No answer from sparql and crowdsource, use embedding")
+                    # use_crowdsource = True
                     use_embedding = True
+            # if use_crowdsource:
+            #     ent_identifier = self.emb_calculator.get_entity_identifier(ent_lbl[0])
+            #     rel_identifier = self.emb_calculator.get_relation_identifier(rel_lbl[0])
+            #     s = "wd:" + str(ent_identifier.split("/")[-1])
+            #     p = "wdt:" + str(rel_identifier)
+            #     if bool(self.crowdsource.search_crowdsource(s, p)):
+            #         o,support_votes, reject_votes, kappa = self.crowdsource.search_crowdsource(s, p)
+            #         if o.startswith("wd:"):
+            #             o = o.replace("wd:", "")
+            #             o = self.emb_calculator.ent2lbl[self.emb_calculator.WD[o]]
+            #         template = random.choice(crowdsource_response_templates)
+            #         response_text = template.format(o, support_votes, reject_votes, kappa)
+            #     else:
+            #         print("use crowdsource fails, use embedding")
+            #         use_embedding = True
             if use_embedding:
                 labels = ent_lbl + rel_lbl
                 try:
                     emb_results = self.emb_calculator.get_most_likely_results(labels, 10)
                 except Exception as exception:
-                    print(f"Error: {type(exception).__name__}")
+                    print(f"Embedding Error: {type(exception).__name__}")
                     return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
                 top_labels = [result['Label'] for result in emb_results[:3]]
                 template = random.choice(embedding_response_templates)
@@ -247,30 +272,31 @@ class Responsor:
 if __name__ == "__main__":
     responsor = Responsor()
     questions = [
-        "Who is the screenwriter of The Masked Gang: Cyprus?",
-        "What is the MPAA film rating of Weathering with You?",
-        "What is the country of citizenship of Olivier Schatzky?",
+        # "Who is the screenwriter of The Masked Gang: Cyprus?",
+        # "What is the MPAA film rating of Weathering with You?",
+        # "What is the country of citizenship of Olivier Schatzky?",
 
-        'When was "The Gofather" released?',
-        'Can you tell me the publication date of Tom Meets Zizou? ',#the answer is 2010-10-01 which is different from the answer from crowdsource which is 2011-01-01
+        # 'When was The Gofather released?',
+        'What is the publication date of God Help the Girl?', #the answer is 2014-01-18 which is different from the answer from crowdsource which is 2014-02-18
+        # 'Can you tell me the publication date of Tom Meets Zizou? ',#the answer is 2010-10-01 which is different from the answer from crowdsource which is 2011-01-01
 
-        "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
-        "Who is the director of Good Will Huntin? ",
-        'Who directed The Bridge on the River Kwai?',
+        # "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
+        # "Who is the director of Good Will Huntin? ",
+        # 'Who directed The Bridge on the River Kwai?',
 
-        "What is the genre of Good Neighbors?",
+        # "What is the genre of Good Neighbors?",
 
-        "What is the box office of The Princess and the Frog? ",
-        "Who is the executive producer of X-Men: First Class? ",
-        "What is the birthplace of Christopher Nolan? ",
+        # "What is the box office of The Princess and the Frog? ",
+        # "Who is the executive producer of X-Men: First Class? ",
+        # "What is the birthplace of Christopher Nolan? ",
 
-        "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
-        "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
+        # "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
+        # "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
 
-        'Show me a picture of Halle Berry. ',
-        'Show me a picture of Tom Cruise. ',
-        'What does Julia Roberts look like? ',
-        'Let me know what Sandra Bullock looks like. '
+        # 'Show me a picture of Halle Berry. ',
+        # 'Show me a picture of Tom Cruise. ',
+        # 'What does Julia Roberts look like? ',
+        # 'Let me know what Sandra Bullock looks like. '
 
     ]
     for question in questions:
