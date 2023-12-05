@@ -1,6 +1,17 @@
 import pandas as pd
 from statsmodels.stats.inter_rater import fleiss_kappa, aggregate_raters
 from pathlib import Path
+from chatbot.knowledge_graph.knowledge_graph import graph
+import rdflib
+from rdflib import Graph, URIRef, Literal, Namespace
+from rdflib.namespace import RDF, RDFS, OWL, XSD
+
+WD = rdflib.Namespace('http://www.wikidata.org/entity/')
+WDT = rdflib.Namespace('http://www.wikidata.org/prop/direct/')
+DDIS = rdflib.Namespace('http://ddis.ch/atai/')
+RDFS = rdflib.namespace.RDFS
+SCHEMA = rdflib.Namespace('http://schema.org/')
+
 
 # Check if filtered data exists
 # filtered_data_path = Path(__file__).parents[1].joinpath("data", "filter_crowd.csv")
@@ -46,6 +57,23 @@ crowd_answers = filtered_data.loc[
 ]
 # crowd_answers.to_csv('crowd_answers.csv', index=False)
 
+def merge_crowdsource_to_graph(crowd_answers, graph):
+    for index, row in crowd_answers.iterrows():
+        subject = WD[row['Subject'].replace('wd:', '')]
+        predicate = WDT[row['Predicate'].replace('wdt:', '')] if row['Predicate'].startswith('wdt:') else DDIS.indirectSubclassOf
+        object = WD[row['Object'].replace('wd:', '')] if row['Object'].startswith('wd:') else Literal(row['Object'])
+        graph.remove(subject, predicate, object)
+        if row['FixPosition'] == 'Subject':
+            graph.add(WD[row['FixValue']], predicate, object)
+        elif row['FixPosition'] == 'Object':
+            object_fix = WD[row['FixValue'].replace('wd:', '')] if row['FixValue'].startswith('wd:') else Literal(row['FixValue'])
+            graph.add(subject, predicate, object_fix)
+        else:
+            graph.add(subject, WDT[row['FixValue']], object)
+    return graph
+
+# graph = merge_crowdsource_to_graph(crowd_answers, graph)
+
 class CrowdSource:
 
     def __init__(self):
@@ -76,8 +104,7 @@ class CrowdSource:
             return crowd_fix
 
 
-    def merge_crowdsource(self, s, p):
-        pass
+    
 
 if __name__ == '__main__':
     crowd = CrowdSource()
