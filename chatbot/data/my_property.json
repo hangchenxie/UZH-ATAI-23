@@ -105,7 +105,8 @@
         "BAMID film rating"
     ],
     "P279": [
-        "subclass of"
+        "subclass of",
+        "ddis:indirectSubclassOf"
     ],
     "P344": [
         "director of photography"
