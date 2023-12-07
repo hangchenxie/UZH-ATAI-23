@@ -25,33 +25,42 @@ class ImageProcess:
         self.graph = KG
         self.images = images
 
-    def get_image(self, entity):
-        entity = ''.join(entity)
-        f = '''
-        PREFIX ddis: <http://ddis.ch/atai/>
-        PREFIX wd: <http://www.wikidata.org/entity/>
-        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-        PREFIX schema: <http://schema.org/>
-        SELECT ?imdb_id WHERE {{
-            wd:{} wdt:P345 ?imdb_id .
-        }}
-        '''.format(entity)
-        print(f)
-        self.id = [str(s.imdb_id) for s in self.graph.query(f)]
-        print("id:", self.id)
-        best_image_info = None
-        best_type = None
+    def get_image(self, entities):
+
         type_preferences = ['poster']
+        ids = []
+
+        for entity in entities:
+            f = '''
+            PREFIX ddis: <http://ddis.ch/atai/>
+            PREFIX wd: <http://www.wikidata.org/entity/>
+            PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+            PREFIX schema: <http://schema.org/>
+            SELECT ?imdb_id WHERE {{
+                wd:{} wdt:P345 ?imdb_id .
+            }}
+            '''.format(entity)
+            print(f)
+            imdb_id = [str(s.imdb_id) for s in self.graph.query(f)]
+
+            if imdb_id:
+                ids.append(imdb_id[0])
+
+        best_image = None
+        best_type = None
+
         for entry in self.images:
-            if self.id[0] in entry['cast'] and len(entry['cast'])==1:
-                if best_image_info is None or entry['type'] in type_preferences:
-                    best_image_info = entry['img']
+            if all(i in entry['cast'] for i in ids):
+                if best_image is None or entry['type'] in type_preferences:
+                    best_image = entry['img']
                     best_type = entry['type']
-        return best_image_info, best_type
+                if entry['type'] in type_preferences:
+                    break
+        return best_image, best_type
 
 if __name__ == "__main__":
     image_process = ImageProcess()
-    entity = "Q2680"
+    entity = ["Q1033016"]  # list of entities
     url, types = image_process.get_image(entity)
     print(url)
     print(types)

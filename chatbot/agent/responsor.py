@@ -224,9 +224,15 @@ class Responsor:
 
 
             if use_image:
-                ent_identifier = self.emb_calculator.get_entity_identifier(ent_lbl[0])
+                entities = ', '.join(entity for entity in entity_dict.keys())
+                entities = entities.replace(", and", ", ")
+                # entities = entities.replace("and", ", ")
+                entities = [entity for entity in entities.split(", ")]
+                print(f"entities: {entities}")
+                identifiers = [self.emb_calculator.get_entity_identifier(entity).split('/')[-1] for entity in entities]
+                print(f"identifiers: {identifiers}")
                 try:
-                    image_url, image_type = self.image_process.get_image(ent_identifier.split("/")[-1])
+                    image_url, image_type = self.image_process.get_image(identifiers)
                 except Exception as exception:
                     print(f"Image Error: {type(exception).__name__}")
                     return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
@@ -259,7 +265,7 @@ if __name__ == "__main__":
         # "What is the country of citizenship of Olivier Schatzky?",
         #
         # "When was The Gofather released?",
-        "Can you tell me the publication date of Tom Meets Zizou? ",#the answer is 2010-10-01 which is different from the answer from crowdsource which is 2011-01-01
+        # "Can you tell me the publication date of Tom Meets Zizou? ",#the answer is 2010-10-01 which is different from the answer from crowdsource which is 2011-01-01
         #
         # "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
         # "Who is the director of Good Will Huntin? ",
@@ -267,8 +273,8 @@ if __name__ == "__main__":
         #
         # "What is the genre of Good Neighbors?",
         #
-        "What is the box office of The Princess and the Frog? ",
-        "Who is the executive producer of X-Men: First Class? ",
+        # "What is the box office of The Princess and the Frog? ",
+        # "Who is the executive producer of X-Men: First Class? ",
         # "What is the birthplace of Christopher Nolan? ",
         #
         # "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
@@ -278,10 +284,10 @@ if __name__ == "__main__":
         # "Can you recommend me some movies with Charlie Chaplin given that I liked The Great Dictator? ",
         # "What should I watch after watching Snakes on a Train? ",
         # "I liked the movie Kung Fu Panda, can you recommend 3 similar movies?   ",
-        # 'Show me a picture of Halle Berry. ',
-        # 'Show me a picture of Tom Cruise. ',
-        # 'What does Julia Roberts look like? ',
-        # 'Let me know what Sandra Bullock looks like. '
+        "Show me a picture of Halle Berry. ",
+        " Show me a picture of Tom Cruise. ",
+        "What does Julia Roberts look like? ",
+        "Let me know what Sandra Bullock looks like. "
 
     ]
     for question in questions:
