@@ -1,0 +1,57 @@
+HITId,Subject,Predicate,Object,SupportVotes,RejectVotes,FixPosition,FixValue,Kappa
+1,E.T. the Extra-Terrestrial,box office,792910554,2,1,,,0.2363636363636367
+2,Peaceful Warrior,box office,4300000,3,0,,,0.2363636363636367
+3,God Help the Girl,publication date,2014-01-18,2,1,Object,2014-02-18,0.2363636363636367
+4,Finding Nemo,box office,969023261,0,3,Object,,0.2363636363636367
+5,The Browning Version,publication date,1951-01-01,3,0,,,0.2363636363636367
+6,The Party's Just Beginning,publication date,2019-02-24,1,2,Object,2019-02-24,0.2363636363636367
+7,The Princess and the Frog,box office,267000000,2,1,Object,,0.2363636363636367
+8,The Twilight Saga: Eclipse,box office,698491348,0,3,Object,698491348,0.2363636363636367
+9,The Candidate,publication date,2008-08-29,0,3,,,0.2363636363636367
+10,Nightjohn,publication date,1996-06-01,1,2,,,0.2363636363636367
+12,film organization,ddis:indirectSubclassOf,organization,3,0,,,0.2363636363636367
+14,comics,ddis:indirectSubclassOf,written work,0,3,,,0.2363636363636367
+17,supervillain team,ddis:indirectSubclassOf,Ardesio,1,2,Object,wd:Q95073,0.2363636363636367
+18,film organization,ddis:indirectSubclassOf,organization,3,0,,,0.2363636363636367
+21,Silver Bear,ddis:indirectSubclassOf,award,1,2,,,0.2363636363636367
+22,Kaboom,publication date,2010-01-01,1,2,Object,2010-01-01,0.04
+23,Like Crazy,publication date,2011-01-01,0,3,Object,2011-01-01,0.04
+24,In the Line of Fire,box office,176997168,1,2,Object,176997168,0.04
+25,Scent of a Woman,publication date,1982-01-01,2,1,Object,1992-01-01,0.04
+26,Tom Meets Zizou,publication date,2011-01-01,0,3,Object,2011-01-01,0.04
+27,Guardians of the Galaxy Vol. 2,box office,863756051,1,2,Object,863756051,0.04
+28,Kung Fu Panda 3,box office,511200000,3,0,,,0.04
+29,Magic Carpet Ride,cast member,Ezgi Mola,0,3,Object,Q5423258,0.04
+30,"Sex, Death and Bowling",publication date,2015-01-05,3,0,,,0.04
+31,RoboCop 3,box office,10696220,2,1,Object,10696210,0.04
+32,The Blue Butterfly,cast member,William Hurt,1,2,Subject,Q1168152,0.04
+33,The Girl in the Spider's Web,publication date,2015-06-27,2,1,Object,2015-08-27,0.04
+34,Horrible Bosses,cast member,Peter Breitmayer,0,3,Subject,Q908556,0.04
+35,King Solomon's Mines,country of origin,United States of America,1,2,Subject,Q1471671,0.04
+36,Czech Dream,distributed by,Netflix,1,2,Subject,Q1722254,0.04
+37,The Adventures of Tom Sawyer,genre,novel,2,1,Subject,Q15052538,0.04
+38,Airport,cast member,Frederick Worlock,1,2,Subject,Q409022,0.04
+39,Being with Juli Ashton,director of photography,Rasmus Heise,2,1,Subject,Q27703272,0.04
+40,Lillian Lehman,occupation,actor,1,2,Predicate,P106,0.04
+41,Conan the Barbarian,cast member,Rose McGowan,1,2,Predicate,P161,0.04
+42,Les Misérables,director of photography,Claude Lelouch,1,2,Predicate,P344,0.1991101223581758
+43,Eskimo,screenwriter,John Lee Mahin,0,3,Predicate,P58,0.1991101223581758
+44,A Happy Event,cast member,Erika Sainte,0,3,Object,Q17350908,0.1991101223581758
+45,Free Willy 3: The Rescue,screenwriter,Keith Walker,1,2,Object,Q3194791,0.1991101223581758
+46,Iron Man 3,JMK film rating,free from 12 years,0,3,Object,Q28732985,0.1991101223581758
+47,Top Gun: Maverick,screenwriter,Ashley Miller,0,3,Predicate,P58,0.1991101223581758
+48,Normal,original language of film or TV show,English,2,1,Subject,Q268905,0.1991101223581758
+49,Delta Farce,armament,PG,2,1,Subject,Q16795448,0.1991101223581758
+50,Medea,distributed by,FandangoNow,3,0,,,0.1991101223581758
+51,The Hell of '63,cast member,Giuseppe Rinaldi,3,0,,,0.1991101223581758
+52,Naruto the Movie: Guardians of the Crescent Moon Kingdom,art director,Tomomichi Nishimura,3,0,,,0.1991101223581758
+53,Masaichi Nagata,allegiance,Japan,2,1,Predicate,P27,0.1991101223581758
+54,Günter Grass,place of burial,Gdańsk,2,1,Predicate,P19,0.1991101223581758
+55,Mandarin,location,Malaysia,2,1,Predicate,P17,0.1991101223581758
+56,Miranda Frigon,place of death,Edmonton,2,1,Predicate,P19,0.1991101223581758
+57,X-Men: First Class,executive producer,Sheryl Lee Ralph,2,1,Object,Q181900,0.1991101223581758
+58,A Night at the Opera,cast member,Jude Law,0,3,,,0.1991101223581758
+59,Mulan,production company,WTFN,2,1,Object,Q7488442,0.1991101223581758
+60,Cho Geun-hyeon,country of citizenship,Angola,2,1,Object,Q884,0.1991101223581758
+61,Nat Pendleton,"languages spoken, written or signed",Mirandese,2,1,Object,Q1860,0.1991101223581758
+47,Top Gun: Maverick,screenwriter,Ashley Miller,0,3,Predicate,P58,0.1991101223581758
