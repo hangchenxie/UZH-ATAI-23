@@ -25,7 +25,7 @@ class ImageProcess:
         self.graph = KG
         self.images = images
 
-    def get_image(self, entities):
+    def get_image_human(self, entities):
 
         type_preferences = ['poster']
         ids = []
@@ -58,9 +58,41 @@ class ImageProcess:
                     break
         return best_image, best_type
 
+    def get_image_movie(self, movie):
+        type_preferences = ['poster']
+
+        # Query the IMDb ID of the movie
+        f = '''
+        PREFIX ddis: <http://ddis.ch/atai/>
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+        PREFIX schema: <http://schema.org/>
+        SELECT ?imdb_id WHERE {{
+            wd:{} wdt:P345 ?imdb_id .
+        }}
+        '''.format(movie)
+        imdb_id = [str(s.imdb_id) for s in self.graph.query(f)]
+
+        best_image = None
+        best_type = None
+
+        # If the movie has an IMDb ID, find the best image for it
+        if imdb_id:
+            for entry in self.images:
+                if imdb_id[0] in entry['movie']:
+                    if best_image is None or entry['type'] in type_preferences:
+                        best_image = entry['img']
+                        best_type = entry['type']
+                    if entry['type'] in type_preferences:
+                        break
+
+        return best_image, best_type
+
+
+
 if __name__ == "__main__":
     image_process = ImageProcess()
-    entity = ["Q1033016"]  # list of entities
+    entity = ['Q161916']  # list of entities
     url, types = image_process.get_image(entity)
     print(url)
     print(types)
