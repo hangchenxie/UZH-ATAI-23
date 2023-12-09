@@ -60,7 +60,9 @@
         "advice",
         "advise",
         "proposal",
-        "recommend movies like"
+        "recommend similar movies",
+        "recommend movies like",
+        "should I watch after watching"
     ],
     "P1431": [
         "executive producer",
@@ -106,7 +108,11 @@
     ],
     "P279": [
         "subclass of",
-        "ddis:indirectSubclassOf"
+        "ddis:indirectSubclassOf",
+        "type of",
+        "kind of",
+        "category of",
+        "belongs to"
     ],
     "P344": [
         "director of photography"
