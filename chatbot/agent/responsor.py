@@ -284,7 +284,11 @@ if __name__ == "__main__":
         # "Can you recommend me some movies with Charlie Chaplin given that I liked The Great Dictator? ",
         # "What should I watch after watching Snakes on a Train? ",
         # "I liked the movie Kung Fu Panda, can you recommend 3 similar movies?   ",
-        "recommend movies like Kung Fu Panda"
+        "Recommend movies similar to Alien, The Thing, and Predator.",
+        "Can you recommend me 3 movies similar to Forest Gump and The Lord of the Rings: The Fellowship of the Ring.",
+        "Recommend some Steven Spielberg movies. I enjoyed the movie A.I. Artificial Intelligence"
+        "Which movies would you suggest for fans of Snatch, Two Smoking Barrels and RocknRolla",
+        "What are some films similar to Spirited Away,Princess Mononoke and Howl's Moving Castle"
         # "Show me a picture of Halle Berry. ",
         # " Show me a picture of Tom Cruise. ",
         # "What does Julia Roberts look like? ",
