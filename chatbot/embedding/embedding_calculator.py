@@ -48,6 +48,7 @@ class EmbeddingCalculator:
         self.ent2id = ent2id
         self.ent_emb = entity_emb
         self.WD = WD
+        self.WDT = WDT
         self.movie_ent2lbl = {}
         self.movie_ent2id = {}
 
@@ -140,5 +141,14 @@ if __name__ == "__main__":
     # print(test_results)
     # ent_identifier = test_results.split("/")[-1]
     # print(ent_identifier)
-    test= test_emb_calculator.ent2lbl[WD['Q457180']]
-    print(test)
+    actors_names = [
+        "Owen Wilson",
+        "Vince Vaughn",
+        "Reese Witherspoon",
+        "Jennifer Aniston",
+        "Two and a Half Men"
+    ]
+    for actor in actors_names:
+        print(actor)
+        print(test_emb_calculator.get_entity_identifier(actor))
+        print("\n")

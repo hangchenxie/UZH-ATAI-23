@@ -284,10 +284,11 @@ if __name__ == "__main__":
         # "Can you recommend me some movies with Charlie Chaplin given that I liked The Great Dictator? ",
         # "What should I watch after watching Snakes on a Train? ",
         # "I liked the movie Kung Fu Panda, can you recommend 3 similar movies?   ",
-        "Show me a picture of Halle Berry. ",
-        " Show me a picture of Tom Cruise. ",
-        "What does Julia Roberts look like? ",
-        "Let me know what Sandra Bullock looks like. "
+        "recommend movies like Kung Fu Panda"
+        # "Show me a picture of Halle Berry. ",
+        # " Show me a picture of Tom Cruise. ",
+        # "What does Julia Roberts look like? ",
+        # "Let me know what Sandra Bullock looks like. "
 
     ]
     for question in questions:

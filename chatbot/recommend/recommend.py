@@ -40,6 +40,83 @@ class Recommend(EmbeddingCalculator):
         recommended_movies = [result['Label'] for result in most_likely_results]
         return recommended_movies
 
+
+    def get_recommendation_single_movie(self, movie):
+
+        movie_id = self.get_entity_identifier(movie).split('/')[-1]
+
+        # # First, get the genre of the movie
+        # genre_query = f"""
+        #     PREFIX ddis: <http://ddis.ch/atai/>
+        #     PREFIX wd: <http://www.wikidata.org/entity/>
+        #     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+        #     PREFIX schema: <http://schema.org/>
+        #     SELECT ?genreLabel WHERE {{
+        #     wd:{movie_id} wdt:P136 ?genre .
+        #     ?genre rdfs:label ?genreLabel .
+        # }}
+        # """
+        # try:
+        #     genre_result = self.graph.query(genre_query)
+        # except Exception as exception:
+        #     print(f"Query Error: {type(exception).__name__}")
+        #     return None
+        #
+        # if genre_result is None:
+        #     return None
+        # else:
+        #     genre_result = pd.DataFrame(genre_result, columns=genre_result.vars)
+        #     genre_list = genre_result.iloc[:, 0].tolist()
+        #     genre_set = set(genre_list)
+        #     genre_set = [str(genre) for genre in genre_set if genre.endswith('film')]
+        #     genre_set = [genre.replace(' film', '').capitalize() for genre in genre_set]
+        #     print(f'genre: {genre_set}')
+
+        from SPARQLWrapper import SPARQLWrapper, JSON
+
+        # First, get the genre of the movie
+        sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
+        genre_query = f"""
+            PREFIX wd: <http://www.wikidata.org/entity/>
+            PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            SELECT ?genreLabel WHERE {{
+                wd:{movie_id} wdt:P136 ?genre .
+                ?genre rdfs:label ?genreLabel .
+                FILTER(LANG(?genreLabel) = "en")
+            }}
+        """
+        sparql.setQuery(genre_query)
+        sparql.setReturnFormat(JSON)
+        try:
+            genre_result = sparql.query().convert()
+        except Exception as exception:
+            print(f"Query Error: {type(exception).__name__}")
+            return None
+
+        if genre_result is None:
+            return None
+        else:
+            genre_list = [result["genreLabel"]["value"] for result in genre_result["results"]["bindings"]]
+            genre_set = set(genre_list)
+            genre_set = [str(genre) for genre in genre_set if genre.endswith('film')]
+            genre_set = [genre.replace(' film', '').capitalize() for genre in genre_set]
+            print(f'genre: {genre_set}')
+
+        if len(genre_set) > 3:
+            genre_set = set(list(genre_set)[:3])
+
+        df = pd.read_csv('../data/movies_genres.csv')
+        df['genres'] = df['genres'].apply(lambda x: x.split('|'))
+        df['match_count'] = df['genres'].apply(lambda x: len(set(genre_set).intersection(set(x))))
+        similar_movies = df[df['match_count'] > 0]
+        similar_movies = similar_movies.sort_values(by='match_count', ascending=False)
+        top_movies = similar_movies.head(3)
+        #top_movie_titles = top_movies['title'].apply(lambda x: x.rsplit(' (', 1)[0])
+        top_movie_titles = top_movies['title']
+
+        return top_movie_titles.tolist()
+
     def get_recommendation_humans(self, entity):
         entity_id = self.get_entity_identifier(entity).split('/')[-1]
         q = f"""
@@ -161,6 +238,9 @@ if __name__ == "__main__":
     # entity = ['Wes Anderson']
     # for e in entity:
     #     print(test.get_recommendation_humans(e))
-    human = 'Charlie Chaplin'
-    movie = 'The Great Dictator'
-    print(test.get_recommendation_human_movie(human, movie))
+    # human = 'Charlie Chaplin'
+    # movie = 'The Great Dictator'
+    # print(test.get_recommendation_human_movie(human, movie))
+    entities = ['Snakes on a Train', 'Kung Fu Panda']
+    for e in entities:
+        print(test.get_recommendation_single_movie(e))
