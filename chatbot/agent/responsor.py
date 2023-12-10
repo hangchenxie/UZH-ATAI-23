@@ -153,7 +153,21 @@ class Responsor:
             print(f"Identify Error: {type(exception).__name__}")
             return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
 
-        ent_lbl = [entity_dict[k]["matched_lbl"] for k in entity_dict.keys()]
+        # Example:
+        # message: Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? 
+        # ent_dict = {
+        #  'movie_ner_entities': 
+        #    {0: {'entity': 'The Lion King, Pocahontas, and The Beauty and the Beast', 'type': 'TITLE', 'begin': 18, 'end': 72, 'matched_lbl': 'Enchanted Tale of Beauty and the Beast', 'score': 66.66666666666667}}, 
+        #  'token_ner_entities': 
+        #    {0: {'entity': 'The Lion King', 'type': 'MISC', 'begin': 18, 'end': 30, 'matched_lbl': 'The Lion King', 'score': 100.0}, 
+        #     1: {'entity': 'Pocahontas', 'type': 'ORG', 'begin': 33, 'end': 42, 'matched_lbl': 'Pocahontas', 'score': 100.0}, 
+        #     2: {'entity': 'The Beauty and the Beast', 'type': 'MISC', 'begin': 49, 'end': 72, 'matched_lbl': 'Beauty and the Beast', 'score': 90.9090909090909}
+        #    }
+        # }
+
+        # use matched_lbl in token_ner_entities
+        # ent_lbl = [entity_dict[k]["matched_lbl"] for k in entity_dict.keys()]
+        ent_lbl = [v['matched_lbl'] for v in entity_dict['token_ner_entities'].values()]
         rel_lbl = [v["relation"] for v in relation_dict.values()]
 
         print(f"ent_lbl: {ent_lbl}")

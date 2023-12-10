@@ -11,15 +11,30 @@ class MessageParser:
     def parse_entity_relation(self, message_text):
         t = message_text
         ent_dict = self.entity_recognizer.get_entities(t)
-        for ent in ent_dict.keys():
-            t_rem = t.replace(ent, "")
-        # TODO: use a relation extractor class
+
+        # Example:
+        # message: Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? 
+        # ent_dict = {
+        #  'movie_ner_entities': 
+        #    {0: {'entity': 'The Lion King, Pocahontas, and The Beauty and the Beast', 'type': 'TITLE', 'begin': 18, 'end': 72, 'matched_lbl': 'Enchanted Tale of Beauty and the Beast', 'score': 66.66666666666667}}, 
+        #  'token_ner_entities': 
+        #    {0: {'entity': 'The Lion King', 'type': 'MISC', 'begin': 18, 'end': 30, 'matched_lbl': 'The Lion King', 'score': 100.0}, 
+        #     1: {'entity': 'Pocahontas', 'type': 'ORG', 'begin': 33, 'end': 42, 'matched_lbl': 'Pocahontas', 'score': 100.0}, 
+        #     2: {'entity': 'The Beauty and the Beast', 'type': 'MISC', 'begin': 49, 'end': 72, 'matched_lbl': 'Beauty and the Beast', 'score': 90.9090909090909}
+        #    }
+        # }
+
+        # remove token_ner_entities
+        ent_list = [v['entity'] for v in ent_dict['token_ner_entities'].values()]
+        pattern = re.compile(r'\b(?:' + '|'.join(map(re.escape, ent_list)) + r')\b', re.IGNORECASE)
+        t_rem = pattern.sub("", t)
+        
         for old, new in [(r"Who|What|When|How many|can you|Tell me|given that|does|do|did|let|us|me|is|are|I like|movie like\b|\bof\b|\?|\.","")]:
             t_rem = re.sub(old, new, t_rem, flags=re.IGNORECASE)
             t_rem = t_rem.strip().replace('"', '')
-            print("parsed_question:", t_rem)
         rel_dict = {t_rem: self.relation_recognizer.get_relation(t_rem)}
         return ent_dict, rel_dict
+
 
 if __name__ == "__main__":
     ms = MessageParser()
