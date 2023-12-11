@@ -111,7 +111,7 @@ class Recommend(EmbeddingCalculator):
         df['match_count'] = df['genres'].apply(lambda x: len(set(genre_set).intersection(set(x))))
         similar_movies = df[df['match_count'] > 0]
         similar_movies = similar_movies.sort_values(by='match_count', ascending=False)
-        top_movies = similar_movies.head(3)
+        top_movies = similar_movies.head(10)
         #top_movie_titles = top_movies['title'].apply(lambda x: x.rsplit(' (', 1)[0])
         top_movie_titles = top_movies['title']
 
@@ -147,14 +147,14 @@ class Recommend(EmbeddingCalculator):
             print(f"q_result: {q_result}")
             lens = q_result.shape[0]
             items = q_result.iloc[:,0].tolist()
-            if lens > 1:
-                last_item = items.pop()
-                result = ', '.join(items) + ' and ' + last_item
-            elif items:
-                result = items[0]
-            else:
-                result = None
-        return result
+            # if lens > 1:
+            #     last_item = items.pop()
+            #     result = ', '.join(items) + ' and ' + last_item
+            # elif items:
+            #     result = items[0]
+            # else:
+            #     result = None
+        return items
 
 
     def get_recommendation_human_movie(self, human, movie):
@@ -215,15 +215,9 @@ class Recommend(EmbeddingCalculator):
             if movie in items_set:
                 items_set.remove(movie)
             items = list(items_set)
-            if lens > 1:
-                last_item = items.pop()
-                result = ', '.join(items) + ' and ' + last_item
-            elif items:
-                result = items[0]
-            else:
-                result = None
 
-        return result
+
+        return items
 
 
 
