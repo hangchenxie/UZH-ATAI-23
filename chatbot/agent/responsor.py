@@ -248,7 +248,7 @@ class Responsor:
 
                if per_count == 0:
                     try:
-                        image_url, image_type = self.image_process.get_image_movie(self.emb_calculator.get_entity_identifier(entity['matched_lbl']).split('/')[-1])
+                        image_url, image_type = self.image_process.get_image_movie(self.emb_calculator.get_entity_identifier(ent_lbl[0]).split('/')[-1])
                     except Exception as exception:
                         print(f"Image Error: {type(exception).__name__}")
                         return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
