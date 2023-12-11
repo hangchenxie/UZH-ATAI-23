@@ -169,9 +169,15 @@ class Responsor:
         # ent_lbl = [entity_dict[k]["matched_lbl"] for k in entity_dict.keys()]
         ent_lbl = [v['matched_lbl'] for v in entity_dict['token_ner_entities'].values()]
         rel_lbl = [v["relation"] for v in relation_dict.values()]
+        token_count = len(ent_lbl)
+        per_entities = [entity['matched_lbl'] for entity in entity_dict['token_ner_entities'].values() if entity['type'] == 'PER']
+        per_count = len(per_entities)
 
         print(f"ent_lbl: {ent_lbl}")
         print(f"rel_lbl: {rel_lbl}")
+        print(f"token_count: {token_count}")
+        print(f"per_entities: {per_entities}")
+        print(f"per_count: {per_count}")
 
         if c == "SPARQL":
             try:
@@ -194,6 +200,7 @@ class Responsor:
                     use_crowdsource = True
                     use_image = False
                     use_recommendation = False
+
 
             if use_crowdsource:
                 ent_identifier = self.emb_calculator.get_entity_identifier(ent_lbl[0])
@@ -239,42 +246,64 @@ class Responsor:
 
             if use_image:
 
-                humans = []
-                for entity in entity_dict['token_ner_entities'].values():
-                    if entity['type'] != 'PER':
-                        try:
-                            image_url, image_type = self.image_process.get_image_movie(self.emb_calculator.get_entity_identifier(entity['matched_lbl']).split('/')[-1])
-                        except Exception as exception:
-                            print(f"Image Error: {type(exception).__name__}")
-                            return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
-                    else:
-                        humans.append(entity['matched_lbl'])
-                        humans_id = [self.emb_calculator.get_entity_identifier(human).split('/')[-1] for human in humans]
-                        try:
-                            image_url, image_type = self.image_process.get_image_human(humans_id)
-                        except Exception as exception:
-                            print(f"Image Error: {type(exception).__name__}")
-                            return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
-                response_text = ''.join('image:' + image_url.replace(".jpg", ""))
-
-
-
+               if per_count == 0:
+                    try:
+                        image_url, image_type = self.image_process.get_image_movie(self.emb_calculator.get_entity_identifier(entity['matched_lbl']).split('/')[-1])
+                    except Exception as exception:
+                        print(f"Image Error: {type(exception).__name__}")
+                        return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+               else:
+                    humans_id = [self.emb_calculator.get_entity_identifier(human).split('/')[-1] for human in per_entities]
+                    try:
+                        image_url, image_type = self.image_process.get_image_human(humans_id)
+                    except Exception as exception:
+                        print(f"Image Error: {type(exception).__name__}")
+                        return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+               response_text = ''.join('image:' + image_url.replace(".jpg", ""))
+               print(f"image_url: {image_url}, image_type: {image_type}")
 
 
 
             if use_recommendation:
-                entities = ', '.join(entity for entity in entity_dict.keys())
-                entities = entities.replace(", and", ", ")
-                entities = entities.replace("and", ", ")
-                entities = [entity for entity in entities.split(", ")]
-                try:
-                    recommendation = self.recommend.get_recommendation(entities)[:10]
-                    recommendation = random.sample(recommendation, 3)
-                    template = random.choice(recommendation_response_templates)
-                except Exception as exception:
-                    print(f"Recommendation Error: {type(exception).__name__}")
+
+                if token_count >= 2 and per_count == 0:
+                    try:
+                        recommendation = self.recommend.get_recommendation_movies(ent_lbl)[:10]
+                        recommendation = random.sample(recommendation, 3)
+                        template = random.choice(recommendation_response_templates)
+                    except Exception as exception:
+                        print(f"Recommendation Error: {type(exception).__name__}")
+                        return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+                elif token_count == 1:
+                    if per_count == 0:
+                        try:
+                            recommendation = self.recommend.get_recommendation_single_movie(ent_lbl[0])
+                            recommendation = random.sample(recommendation, 3)
+                            template = random.choice(recommendation_response_templates)
+                        except Exception as exception:
+                            print(f"Recommendation Error: {type(exception).__name__}")
+                            return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+                    else:
+                        try:
+                            recommendation = self.recommend.get_recommendation_humans(ent_lbl[0])
+                            template = random.choice(recommendation_response_templates)
+                        except Exception as exception:
+                            print(f"Recommendation Error: {type(exception).__name__}")
+                            return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+                elif token_count == 2 and per_count == 1:
+                     human = per_entities[0]
+                     movie = list(set(ent_lbl) - set(per_entities))[0]
+                     try:
+                        recommendation = self.recommend.get_recommendation_human_movie(human, movie)
+                        template = random.choice(recommendation_response_templates)
+                     except Exception as exception:
+                        print(f"Recommendation Error: {type(exception).__name__}")
+                        return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+                else:
                     return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+
                 response_text = template.format(', '.join(recommendation))
+
 
         return response_text
 
@@ -284,35 +313,31 @@ if __name__ == "__main__":
     questions = [
 
 
-        # "Who is the screenwriter of The Masked Gang: Cyprus?",
-        # "What is the MPAA film rating of Weathering with You?",
-        # "What is the country of citizenship of Olivier Schatzky?",
-        #
-        # "When was The Gofather released?",
-        # "Can you tell me the publication date of Tom Meets Zizou? ",#the answer is 2010-10-01 which is different from the answer from crowdsource which is 2011-01-01
-        #
-        # "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
-        # "Who is the director of Good Will Huntin? ",
-        # "Who directed The Bridge on the River Kwai?",
-        #
-        # "What is the genre of Good Neighbors?",
-        #
-        # "What is the box office of The Princess and the Frog? ",
-        # "Who is the executive producer of X-Men: First Class? ",
-        # "What is the birthplace of Christopher Nolan? ",
-        #
-        # "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
-        # "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
-        # "Recommend movies similar to Halmlet and Othello. ",
-        # "I really like Wes Anderson, what should I watch",
-        # "Can you recommend me some movies with Charlie Chaplin given that I liked The Great Dictator? ",
-        # "What should I watch after watching Snakes on a Train? ",
-        # "I liked the movie Kung Fu Panda, can you recommend 3 similar movies?   ",
-        # "Recommend movies similar to Alien, The Thing, and Predator.",
-        # "Can you recommend me 3 movies similar to Forest Gump and The Lord of the Rings: The Fellowship of the Ring.",
-        # "Recommend some Steven Spielberg movies. I enjoyed the movie A.I. Artificial Intelligence"
-        # "Which movies would you suggest for fans of Snatch, Two Smoking Barrels and RocknRolla",
-        # "What are some films similar to Spirited Away,Princess Mononoke and Howl's Moving Castle"
+        "Who is the screenwriter of The Masked Gang: Cyprus?",
+        "What is the MPAA film rating of Weathering with You?",
+        "What is the country of citizenship of Olivier Schatzky?",
+
+        "When was The Gofather released?",
+        "Can you tell me the publication date of Tom Meets Zizou? ",#the answer is 2010-10-01 which is different from the answer from crowdsource which is 2011-01-01
+
+        "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
+        "Who is the director of Good Will Huntin? ",
+        "Who directed The Bridge on the River Kwai?",
+
+        "What is the genre of Good Neighbors?",
+
+        "What is the box office of The Princess and the Frog? ",
+        "Who is the executive producer of X-Men: First Class? ",
+        "What is the birthplace of Christopher Nolan? ",
+
+        "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
+        "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
+        "Recommend movies similar to Halmlet and Othello. ",
+        "I really like Wes Anderson, what should I watch",
+        "Can you recommend me some movies with Charlie Chaplin given that I liked The Great Dictator? ",
+        "What should I watch after watching Snakes on a Train? ",
+        "I liked the movie Kung Fu Panda, can you recommend 3 similar movies?   ",
+        "Can you recommend me 3 movies similar to Forest Gump and The Lord of the Rings: The Fellowship of the Ring.",
         "Show me a picture of Halle Berry. ",
         " Show me a picture of Tom Cruise. ",
         "What does Julia Roberts look like? ",
