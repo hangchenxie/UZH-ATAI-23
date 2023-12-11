@@ -238,19 +238,29 @@ class Responsor:
 
 
             if use_image:
-                entities = ', '.join(entity for entity in entity_dict.keys())
-                entities = entities.replace(", and", ", ")
-                # entities = entities.replace("and", ", ")
-                entities = [entity for entity in entities.split(", ")]
-                print(f"entities: {entities}")
-                identifiers = [self.emb_calculator.get_entity_identifier(entity).split('/')[-1] for entity in entities]
-                print(f"identifiers: {identifiers}")
-                try:
-                    image_url, image_type = self.image_process.get_image(identifiers)
-                except Exception as exception:
-                    print(f"Image Error: {type(exception).__name__}")
-                    return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
-                response_text = 'image:' + image_url.replace(".jpg", "")
+
+                humans = []
+                for entity in entity_dict['token_ner_entities'].values():
+                    if entity['type'] != 'PER':
+                        try:
+                            image_url, image_type = self.image_process.get_image_movie(self.emb_calculator.get_entity_identifier(entity['matched_lbl']).split('/')[-1])
+                        except Exception as exception:
+                            print(f"Image Error: {type(exception).__name__}")
+                            return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+                    else:
+                        humans.append(entity['matched_lbl'])
+                        humans_id = [self.emb_calculator.get_entity_identifier(human).split('/')[-1] for human in humans]
+                        try:
+                            image_url, image_type = self.image_process.get_image_human(humans_id)
+                        except Exception as exception:
+                            print(f"Image Error: {type(exception).__name__}")
+                            return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+                response_text = ''.join('image:' + image_url.replace(".jpg", ""))
+
+
+
+
+
 
             if use_recommendation:
                 entities = ', '.join(entity for entity in entity_dict.keys())
@@ -298,15 +308,15 @@ if __name__ == "__main__":
         # "Can you recommend me some movies with Charlie Chaplin given that I liked The Great Dictator? ",
         # "What should I watch after watching Snakes on a Train? ",
         # "I liked the movie Kung Fu Panda, can you recommend 3 similar movies?   ",
-        "Recommend movies similar to Alien, The Thing, and Predator.",
-        "Can you recommend me 3 movies similar to Forest Gump and The Lord of the Rings: The Fellowship of the Ring.",
-        "Recommend some Steven Spielberg movies. I enjoyed the movie A.I. Artificial Intelligence"
-        "Which movies would you suggest for fans of Snatch, Two Smoking Barrels and RocknRolla",
-        "What are some films similar to Spirited Away,Princess Mononoke and Howl's Moving Castle"
-        # "Show me a picture of Halle Berry. ",
-        # " Show me a picture of Tom Cruise. ",
-        # "What does Julia Roberts look like? ",
-        # "Let me know what Sandra Bullock looks like. "
+        # "Recommend movies similar to Alien, The Thing, and Predator.",
+        # "Can you recommend me 3 movies similar to Forest Gump and The Lord of the Rings: The Fellowship of the Ring.",
+        # "Recommend some Steven Spielberg movies. I enjoyed the movie A.I. Artificial Intelligence"
+        # "Which movies would you suggest for fans of Snatch, Two Smoking Barrels and RocknRolla",
+        # "What are some films similar to Spirited Away,Princess Mononoke and Howl's Moving Castle"
+        "Show me a picture of Halle Berry. ",
+        " Show me a picture of Tom Cruise. ",
+        "What does Julia Roberts look like? ",
+        "Let me know what Sandra Bullock looks like. "
 
     ]
     for question in questions:
