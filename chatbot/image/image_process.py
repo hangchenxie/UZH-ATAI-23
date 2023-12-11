@@ -2,8 +2,9 @@ from pathlib import Path
 import re
 import warnings
 import json
-from chatbot import cache
+# from chatbot import cache
 from chatbot.knowledge_graph.knowledge_graph import KnowledgeGraph
+
 
 KG = KnowledgeGraph()
 
@@ -27,7 +28,7 @@ class ImageProcess:
 
     def get_image_human(self, entities):
 
-        type_preferences = ['poster']
+        type_preferences = ['poster', 'still_frame']
         ids = []
 
         for entity in entities:
@@ -58,8 +59,9 @@ class ImageProcess:
                     break
         return best_image, best_type
 
+
     def get_image_movie(self, movie):
-        type_preferences = ['poster']
+        type_preferences = ['poster', 'still_frame']
 
         # Query the IMDb ID of the movie
         f = '''
@@ -92,8 +94,13 @@ class ImageProcess:
 
 if __name__ == "__main__":
     image_process = ImageProcess()
-    entity = ['Q161916']  # list of entities
-    url, types = image_process.get_image(entity)
+    # entity = ['Q161916', ]  # list of entities
+    # movie_id: "tt0286516", img: "1959/rm486709248.jpg" 
+    # "cast" : ["nm1197165", "nm1196061", "nm0000420"] # Francesco Casisa (Q3749748), Filippo Pucillo (Q3071912), Valeria Golino (Q230710)
+    entity = ['Q3749748', 'Q3071912', 'Q230710']  
+    url, types = image_process.get_image_human(entity)
+    # entity = 'Q3933460' # movie_id: "tt0286516", Respiro (Q3933460)
+    url, types = image_process.get_image_movie(entity)
     print(url)
     print(types)
 

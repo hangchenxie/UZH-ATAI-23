@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from chatbot.sparknlp_pipeline.sparknlp_pipeline import spark, movie_ner_pipeline, token_ner_pipeline
+from chatbot.sparknlp_pipeline.sparknlp_pipeline import spark, token_ner_pipeline
 from chatbot import cache
 from pathlib import Path
 import re
@@ -17,7 +17,7 @@ with open(ent_lbl_path, 'rb') as file:
 class EntityRecognizer:
 
     def __init__(self):
-        self.movie_pipeline = movie_ner_pipeline
+        # self.movie_pipeline = movie_ner_pipeline
         self.token_pipeline = token_ner_pipeline
 
 
@@ -35,23 +35,23 @@ class EntityRecognizer:
     def get_entities(self, message):
 
         text = spark.createDataFrame(pd.DataFrame({'text': [message,]}))
-        movie_result = self.movie_pipeline.fit(text).transform(text)
+        # movie_result = self.movie_pipeline.fit(text).transform(text)
         token_result = self.token_pipeline.fit(text).transform(text)
         # result.select("text", "entities").show(truncate=False)
 
-        movie_ent_dict = {}
-        movie_ent_rows = movie_result.select("entities").collect()[0][0]
+        # movie_ent_dict = {}
+        # movie_ent_rows = movie_result.select("entities").collect()[0][0]
 
-        i = 0
-        for row in movie_ent_rows:
-            movie_ent_dict[i] = {}
-            movie_ent_dict[i]['entity'] = row['result']
-            movie_ent_dict[i]['type'] = row['metadata']['entity']
-            movie_ent_dict[i]['begin'] = row['begin']
-            movie_ent_dict[i]['end'] = row['end']
-            match_ent_lbl = self.match_entity_label(row['result'], ent_lbl)
-            movie_ent_dict[i]["matched_lbl"], movie_ent_dict[i]["score"] = match_ent_lbl[0], match_ent_lbl[1]
-            i += 1
+        # i = 0
+        # for row in movie_ent_rows:
+        #     movie_ent_dict[i] = {}
+        #     movie_ent_dict[i]['entity'] = row['result']
+        #     movie_ent_dict[i]['type'] = row['metadata']['entity']
+        #     movie_ent_dict[i]['begin'] = row['begin']
+        #     movie_ent_dict[i]['end'] = row['end']
+        #     match_ent_lbl = self.match_entity_label(row['result'], ent_lbl)
+        #     movie_ent_dict[i]["matched_lbl"], movie_ent_dict[i]["score"] = match_ent_lbl[0], match_ent_lbl[1]
+        #     i += 1
 
         token_ent_dict = {}
         token_ent_rows = token_result.select("entities").collect()[0][0]
@@ -77,7 +77,8 @@ class EntityRecognizer:
                 token_ent_dict[i]["matched_lbl"], token_ent_dict[i]["score"] = match_ent_lbl[0], match_ent_lbl[1]
                 i += 1
 
-        return {"movie_ner_entities": movie_ent_dict, "token_ner_entities": token_ent_dict}
+        # return {"movie_ner_entities": movie_ent_dict, "token_ner_entities": token_ent_dict}
+        return {"token_ner_entities": token_ent_dict}
 
 
 

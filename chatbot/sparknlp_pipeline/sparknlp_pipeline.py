@@ -19,15 +19,15 @@ tokenizer = Tokenizer() \
 .setInputCols(['document']) \
 .setOutputCol('token')
 
-embeddings = DistilBertEmbeddings\
-.pretrained('distilbert_base_cased', 'en')\
-.setInputCols(["token", "document"])\
-.setOutputCol("embeddings")
+# embeddings = DistilBertEmbeddings\
+# .pretrained('distilbert_base_cased', 'en')\
+# .setInputCols(["token", "document"])\
+# .setOutputCol("embeddings")
 
-movie_ner_model = NerDLModel.pretrained(
-    'ner_mit_movie_simple_distilbert_base_cased', 'en') \
-.setInputCols(['document', 'token', 'embeddings']) \
-.setOutputCol('ner')
+# movie_ner_model = NerDLModel.pretrained(
+#     'ner_mit_movie_simple_distilbert_base_cased', 'en') \
+# .setInputCols(['document', 'token', 'embeddings']) \
+# .setOutputCol('ner')
 
 token_ner_model = (
     BertForTokenClassification.pretrained("bert_base_token_classifier_conll03", "en")
@@ -50,13 +50,13 @@ embeddings_sentence = BertSentenceEmbeddings.pretrained("sent_small_bert_L2_128"
                 .setMaxSentenceLength(512)
 
 
-movie_ner_pipeline = Pipeline(stages=[
-    document_assembler, 
-    tokenizer,
-    embeddings,
-    movie_ner_model,
-    ner_converter
-])
+# movie_ner_pipeline = Pipeline(stages=[
+#     document_assembler, 
+#     tokenizer,
+#     embeddings,
+#     movie_ner_model,
+#     ner_converter
+# ])
 
 token_ner_pipeline = Pipeline(stages=[
     document_assembler,
