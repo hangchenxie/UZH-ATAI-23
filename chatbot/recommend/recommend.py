@@ -19,11 +19,12 @@ df = pd.read_csv(genres_path)
 class Recommend(EmbeddingCalculator):
 
     def get_recommendation_movies(self, entities):
-        movie_lbls = movies_df['Movie'].tolist()
-        movies_list = [get_close_matches(ent.strip(), movie_lbls)[0] for ent in entities]
-        print("movies_list:", movies_list)
+        # movie_lbls = movies_df['Movie'].tolist()
+        # movies_list = [get_close_matches(ent.strip(), movie_lbls)[0] for ent in entities]
+        # print("movies_list:", movies_list)
         # genres_list = [genres_df.loc[genres_df['title'] == movie, 'genres'].values[0].split('|') for movie in movies_list]
         # genres_list = [genres_df.loc[genres_df['title'] == movie, 'genres'].values[0].split('|') if not genres_df.loc[genres_df['title'] == movie, 'genres'].empty else [] for movie in movies_list]
+        movies_list = entities
         movies_id = [self.ent2id[self.lbl2ent[movie]] for movie in movies_list]
         print("movies_id:", movies_id)
         movies_emb = np.array([self.ent_emb[i] for i in movies_id])
