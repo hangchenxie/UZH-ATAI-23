@@ -15,17 +15,24 @@ class MessageParser:
         # Example:
         # message: Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? 
         # ent_dict = {
-        #  'movie_ner_entities': 
-        #    {0: {'entity': 'The Lion King, Pocahontas, and The Beauty and the Beast', 'type': 'TITLE', 'begin': 18, 'end': 72, 'matched_lbl': 'Enchanted Tale of Beauty and the Beast', 'score': 66.66666666666667}}, 
-        #  'token_ner_entities': 
-        #    {0: {'entity': 'The Lion King', 'type': 'MISC', 'begin': 18, 'end': 30, 'matched_lbl': 'The Lion King', 'score': 100.0}, 
-        #     1: {'entity': 'Pocahontas', 'type': 'ORG', 'begin': 33, 'end': 42, 'matched_lbl': 'Pocahontas', 'score': 100.0}, 
-        #     2: {'entity': 'The Beauty and the Beast', 'type': 'MISC', 'begin': 49, 'end': 72, 'matched_lbl': 'Beauty and the Beast', 'score': 90.9090909090909}
-        #    }
+        #   'movie_ner_entities': [
+        #       {'ner': 'movie_ner', 'entity': 'The Lion King, Pocahontas, and The Beauty and the Beast', 'type': 'TITLE', 'begin': 18, 'end': 72, 'matched_lbl': 'Enchanted Tale of Beauty and the Beast', 'score': 66.66666666666667}
+        #    ], 
+        #   'token_ner_entities': [
+        #       {'ner': 'token_ner', 'entity': 'The Lion King', 'type': 'MISC', 'begin': 18, 'end': 30, 'matched_lbl': 'The Lion King', 'score': 100.0}, 
+        #       {'ner': 'token_ner', 'entity': 'Pocahontas', 'type': 'ORG', 'begin': 33, 'end': 42, 'matched_lbl': 'Pocahontas', 'score': 100.0}, 
+        #       {'ner': 'token_ner', 'entity': 'The Beauty and the Beast', 'type': 'MISC', 'begin': 49, 'end': 72, 'matched_lbl': 'Beauty and the Beast', 'score': 90.9090909090909}
+        #    ], 
+        #   'mixed_ner_entities': [
+        #       {'ner': 'token_ner', 'entity': 'The Lion King', 'type': 'MISC', 'begin': 18, 'end': 30, 'matched_lbl': 'The Lion King', 'score': 100.0}, 
+        #       {'ner': 'token_ner', 'entity': 'Pocahontas', 'type': 'ORG', 'begin': 33, 'end': 42, 'matched_lbl': 'Pocahontas', 'score': 100.0},
+        #       {'ner': 'token_ner', 'entity': 'The Beauty and the Beast', 'type': 'MISC', 'begin': 49, 'end': 72, 'matched_lbl': 'Beauty and the Beast', 'score': 90.9090909090909}
+        #    ]
         # }
 
-        # remove token_ner_entities
-        ent_list = [v['entity'] for v in ent_dict['token_ner_entities'].values()]
+
+        # remove entities
+        ent_list = [v['entity'] for v in ent_dict['mixed_ner_entities']]
         pattern = re.compile(r'\b(?:' + '|'.join(map(re.escape, ent_list)) + r')\b', re.IGNORECASE)
         t_rem = pattern.sub("", t)
         
