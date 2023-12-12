@@ -1,5 +1,4 @@
 from pathlib import Path
-import os
 import random
 from chatbot.parser.parser import MessageParser
 from chatbot.embedding.embedding_calculator import EmbeddingCalculator
@@ -185,6 +184,9 @@ class Responsor:
         print(f"per_entities: {per_entities}")
         print(f"per_count: {per_count}")
 
+        if len(ent_lbl) == 0 or len(rel_lbl) == 0:
+            return f"Sorry I don't understand the question: '{message_text}'. Could you please rephrase it?"
+
         if c == "SPARQL":
             try:
                 answer = [[self.convert_type(t) for t in s] for s in self.graph.query(message_text)]
@@ -342,12 +344,13 @@ if __name__ == "__main__":
         # "I really like Wes Anderson, what should I watch",
         # "Can you recommend me some movies with Charlie Chaplin given that I liked The Great Dictator? ",
         # "What should I watch after watching Snakes on a Train? ",
-        "I liked the movie Kung Fu Panda, can you recommend 3 similar movies?"
+        # "I liked the movie Kung Fu Panda, can you recommend 3 similar movies?"
         # "Can you recommend me 3 movies similar to Forest Gump and The Lord of the Rings: The Fellowship of the Ring.",
         # "Show me a picture of Halle Berry. ",
         # " Show me a picture of Tom Cruise. ",
         # "What does Julia Roberts look like? ",
         # "Let me know what Sandra Bullock looks like. "
+        "recommend some comedies"
 
     ]
     for question in questions:
