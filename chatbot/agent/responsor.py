@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import random
 from chatbot.parser.parser import MessageParser
 from chatbot.embedding.embedding_calculator import EmbeddingCalculator
@@ -312,36 +313,36 @@ if __name__ == "__main__":
     responsor = Responsor()
     questions = [
 
-
-        "Who is the screenwriter of The Masked Gang: Cyprus?",
-        "What is the MPAA film rating of Weathering with You?",
-        "What is the country of citizenship of Olivier Schatzky?",
-
-        "When was The Gofather released?",
-        "Can you tell me the publication date of Tom Meets Zizou? ",#the answer is 2010-10-01 which is different from the answer from crowdsource which is 2011-01-01
-
-        "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
-        "Who is the director of Good Will Huntin? ",
-        "Who directed The Bridge on the River Kwai?",
-
-        "What is the genre of Good Neighbors?",
-
-        "What is the box office of The Princess and the Frog? ",
-        "Who is the executive producer of X-Men: First Class? ",
-        "What is the birthplace of Christopher Nolan? ",
-
-        "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
-        "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween. "
-        "Recommend movies similar to Halmlet and Othello. ",
-        "I really like Wes Anderson, what should I watch",
-        "Can you recommend me some movies with Charlie Chaplin given that I liked The Great Dictator? ",
-        "What should I watch after watching Snakes on a Train? ",
-        "I liked the movie Kung Fu Panda, can you recommend 3 similar movies?   ",
-        "Can you recommend me 3 movies similar to Forest Gump and The Lord of the Rings: The Fellowship of the Ring.",
-        "Show me a picture of Halle Berry. ",
-        " Show me a picture of Tom Cruise. ",
-        "What does Julia Roberts look like? ",
-        "Let me know what Sandra Bullock looks like. "
+        #
+        # "Who is the screenwriter of The Masked Gang: Cyprus?",
+        # "What is the MPAA film rating of Weathering with You?",
+        # "What is the country of citizenship of Olivier Schatzky?",
+        #
+        # "When was The Gofather released?",
+        # "Can you tell me the publication date of Tom Meets Zizou? ",#the answer is 2010-10-01 which is different from the answer from crowdsource which is 2011-01-01
+        #
+        # "Who is the director of Star Wars: Epode VI - Return of the Jedi?",
+        # "Who is the director of Good Will Huntin? ",
+        # "Who directed The Bridge on the River Kwai?",
+        #
+        # "What is the genre of Good Neighbors?",
+        #
+        # "What is the box office of The Princess and the Frog? ",
+        # "Who is the executive producer of X-Men: First Class? ",
+        # "What is the birthplace of Christopher Nolan? ",
+        #
+        # "Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies? ",
+        # "Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween.",
+        # "Recommend movies similar to Halmlet and Othello. ",
+        # "I really like Wes Anderson, what should I watch",
+        # "Can you recommend me some movies with Charlie Chaplin given that I liked The Great Dictator? ",
+        # "What should I watch after watching Snakes on a Train? ",
+        "I liked the movie Kung Fu Panda, can you recommend 3 similar movies?"
+        # "Can you recommend me 3 movies similar to Forest Gump and The Lord of the Rings: The Fellowship of the Ring.",
+        # "Show me a picture of Halle Berry. ",
+        # " Show me a picture of Tom Cruise. ",
+        # "What does Julia Roberts look like? ",
+        # "Let me know what Sandra Bullock looks like. "
 
     ]
     for question in questions:

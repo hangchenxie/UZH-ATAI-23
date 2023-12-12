@@ -28,7 +28,7 @@ class ImageProcess:
 
     def get_image_human(self, entities):
 
-        type_preferences = ['poster', 'still_frame']
+        type_preferences = ['poster']
         ids = []
 
         for entity in entities:

@@ -13,8 +13,8 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 movies_path = Path(__file__).parents[1].joinpath("data", "entity_movie.csv")
 movies_df = pd.read_csv(movies_path)
 movies_df = movies_df[movies_df['Movie'].notna()]
-# genres_path = Path(__file__).parents[1].joinpath("data", "movies_genres.csv")
-# genres_df = pd.read_csv(genres_path)
+genres_path = Path(__file__).parents[1].joinpath("data", "movies_genres.csv")
+df = pd.read_csv(genres_path)
 
 class Recommend(EmbeddingCalculator):
 
@@ -44,7 +44,7 @@ class Recommend(EmbeddingCalculator):
 
     def get_recommendation_single_movie(self, movie):
 
-        df = pd.read_csv('../data/movies_genres.csv')
+        # df = pd.read_csv('../data/movies_genres.csv')
 
         # Filter the DataFrame to get the row that matches the given movie
         try:
@@ -218,6 +218,6 @@ if __name__ == "__main__":
     # human = 'Charlie Chaplin'
     # movie = 'The Great Dictator'
     # print(test.get_recommendation_human_movie(human, movie))
-    entities = ['Snakes on a Train', 'Kung Fu Panda']
+    entities = ['Kung Fu Panda']
     for e in entities:
         print(test.get_recommendation_single_movie(e))
