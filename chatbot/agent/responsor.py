@@ -175,7 +175,7 @@ class Responsor:
         ent_lbl = [v['matched_lbl'] for v in entity_dict['mixed_ner_entities']]
         rel_lbl = [v["relation"] for v in relation_dict.values()]
         token_count = len(ent_lbl)
-        per_entities = [entity['matched_lbl'] for entity in entity_dict['mixed_ner_entities'].values() if entity['type'] == 'PER']
+        per_entities = [entity['matched_lbl'] for entity in entity_dict['mixed_ner_entities'] if entity['type'] == 'PER']
         per_count = len(per_entities)
 
         print(f"ent_lbl: {ent_lbl}")
