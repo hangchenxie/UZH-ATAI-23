@@ -1,8 +1,21 @@
 .env
 .ipynb_checkpoints
 .DS_Store
-data/
+# data/
 demo.ipynb
 *.ipynb
 **/__pycache__/
 **/cache-directory/
+chatbot/data/14_graph.nt
+chatbot/data/imdb-top-250.t
+chatbot/data/plots.csv
+chatbot/data/14_graph.tsv
+chatbot/data/crowd/crowd_data_olat_P344FullstopCorrected.tsv
+chatbot/data/crowd/readme_crowd_data.txt
+chatbot/data/embeds/entity_embeds.npy
+chatbot/data/embeds/entity_ids.del
+chatbot/data/embeds/relation_embeds.npy
+chatbot/data/embeds/relation_ids.del
+chatbot/data/images.json
+chatbot/data/sparql_prompts
+chatbot/data/sample_questions.json

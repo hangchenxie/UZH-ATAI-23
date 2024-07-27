@@ -72,8 +72,13 @@ class Agent:
 
                     
                     # Send a message to the corresponding chat room using the post_messages method of the room object.
-                    answer = self.responsor.response(message_text)
-                    room.post_messages(f"Answer: {answer}")
+                    try:
+                        answer = self.responsor.response(message_text)
+                        room.post_messages(f"Answer: {answer}")
+                        print(f'Response: {answer}')
+                    except Exception as exception:
+                        room.post_messages(f"Error: {type(exception).__name__}")
+                        print(f'Error: {type(exception).__name__}')
                                         
                     # Mark the message as processed, so it will be filtered out when retrieving new messages.
                     room.mark_as_processed(message)
